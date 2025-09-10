@@ -94,19 +94,12 @@ export function removeStudent(studentId: string): void {
 }
 
 // Student data (scoped to current user)
-export function getStudent(): Student {
+export function getStudent(): Student | null {
   const currentId = getCurrentStudentId();
-  const students = getAllStudents();
-  const student = students.find(s => s.id === currentId);
+  if (!currentId) return null;
   
-  return student || {
-    id: currentId,
-    name: "Alex Rodriguez",
-    grade: 6,
-    section: "A",
-    initials: "AR",
-    createdAt: new Date()
-  };
+  const students = getAllStudents();
+  return students.find(s => s.id === currentId) || null;
 }
 
 export function setStudent(student: Student): void {
@@ -116,21 +109,10 @@ export function setStudent(student: Student): void {
 // Progress data (scoped to current user)
 export function getProgress(): StudentProgress[] {
   const currentId = getCurrentStudentId();
+  if (!currentId) return [];
+  
   const key = getScopedKey(STORAGE_KEYS.PROGRESS, currentId);
-  return getFromStorage(key, [
-    {
-      id: "progress-1",
-      studentId: currentId,
-      factCategoryId: "add-plus-minus-1-2",
-      phase: "counting",
-      accuracy: 75,
-      efficiency: 45,
-      flexibility: 60,
-      strategyUse: 50,
-      lastPracticed: new Date(),
-      updatedAt: new Date()
-    }
-  ]);
+  return getFromStorage(key, []);
 }
 
 export function setProgress(progress: StudentProgress[]): void {
@@ -166,17 +148,12 @@ export function updateProgress(categoryId: string, updates: Partial<StudentProgr
 }
 
 // Points data (scoped to current user)
-export function getPoints(): StudentPoints {
+export function getPoints(): StudentPoints | null {
   const currentId = getCurrentStudentId();
+  if (!currentId) return null;
+  
   const key = getScopedKey(STORAGE_KEYS.POINTS, currentId);
-  return getFromStorage(key, {
-    id: "points-1",
-    studentId: currentId,
-    totalPoints: 150,
-    spentPoints: 0,
-    availablePoints: 150,
-    updatedAt: new Date()
-  });
+  return getFromStorage(key, null);
 }
 
 export function setPoints(points: StudentPoints): void {
@@ -289,21 +266,12 @@ export function equipReward(rewardItemId: string, category: string): void {
 }
 
 // Avatar (scoped to current user)
-export function getAvatar(): StudentAvatar {
+export function getAvatar(): StudentAvatar | null {
   const currentId = getCurrentStudentId();
+  if (!currentId) return null;
+  
   const key = getScopedKey(STORAGE_KEYS.AVATAR, currentId);
-  return getFromStorage(key, {
-    id: "avatar-1",
-    studentId: currentId,
-    avatarType: "emoji",
-    baseColor: "#4F46E5",
-    accessories: {},
-    outfit: null,
-    expression: "happy",
-    background: null,
-    createdAt: new Date(),
-    updatedAt: new Date()
-  });
+  return getFromStorage(key, null);
 }
 
 export function setAvatar(avatar: StudentAvatar): void {
