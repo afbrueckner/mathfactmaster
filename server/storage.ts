@@ -315,98 +315,9 @@ export class MemStorage implements IStorage {
       this.rewardItems.set(item.id, item);
     });
 
-    // Initialize default avatar and some starter rewards for the default student
-    const defaultAvatar: StudentAvatar = {
-      id: randomUUID(),
-      studentId: "student-1",
-      avatarType: "character",
-      baseColor: "#4F46E5",
-      accessories: [],
-      outfit: "casual",
-      expression: "happy",
-      background: "classroom",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-    this.avatars.set(defaultAvatar.id, defaultAvatar);
+    // No default student data - clean slate for all users
 
-    // Give the default student some starting points
-    const defaultPoints: StudentPoints = {
-      id: randomUUID(),
-      studentId: "student-1",
-      totalPoints: 150,
-      spentPoints: 0,
-      availablePoints: 150,
-      updatedAt: new Date(),
-    };
-    this.studentPoints.set(defaultPoints.id, defaultPoints);
-
-    // Add a welcome transaction
-    const welcomeTransaction: PointTransaction = {
-      id: randomUUID(),
-      studentId: "student-1",
-      points: 150,
-      reason: "Welcome bonus!",
-      category: "welcome",
-      createdAt: new Date(),
-    };
-    this.pointTransactions.set(welcomeTransaction.id, welcomeTransaction);
-
-    // Initialize sample progress data
-    const progressData: StudentProgress[] = [
-      {
-        id: "progress-1",
-        studentId: "student-1",
-        factCategoryId: "add-plus-minus-1-2",
-        phase: "mastery",
-        accuracy: 95,
-        efficiency: 90,
-        flexibility: 80,
-        strategyUse: 85,
-        lastPracticed: new Date(),
-        updatedAt: new Date(),
-      },
-      {
-        id: "progress-2",
-        studentId: "student-1",
-        factCategoryId: "add-doubles",
-        phase: "mastery",
-        accuracy: 92,
-        efficiency: 88,
-        flexibility: 85,
-        strategyUse: 90,
-        lastPracticed: new Date(),
-        updatedAt: new Date(),
-      },
-      {
-        id: "progress-3",
-        studentId: "student-1",
-        factCategoryId: "add-combinations-10",
-        phase: "deriving",
-        accuracy: 80,
-        efficiency: 70,
-        flexibility: 75,
-        strategyUse: 78,
-        lastPracticed: new Date(),
-        updatedAt: new Date(),
-      },
-      {
-        id: "progress-4",
-        studentId: "student-1",
-        factCategoryId: "mult-2-5-10",
-        phase: "mastery",
-        accuracy: 88,
-        efficiency: 85,
-        flexibility: 80,
-        strategyUse: 82,
-        lastPracticed: new Date(),
-        updatedAt: new Date(),
-      }
-    ];
-
-    progressData.forEach(progress => {
-      this.studentProgress.set(progress.id, progress);
-    });
+    // No sample progress data - users start fresh
   }
 
   async getStudent(id: string): Promise<Student | undefined> {
@@ -691,7 +602,7 @@ export class MemStorage implements IStorage {
       points,
       reason,
       category,
-      metadata,
+      metadata: metadata || {},
       createdAt: new Date(),
     };
     this.pointTransactions.set(transactionId, transaction);
@@ -719,6 +630,7 @@ export class MemStorage implements IStorage {
       points: -points,
       reason,
       category: 'purchase',
+      metadata: {},
       createdAt: new Date(),
     };
     this.pointTransactions.set(transactionId, transaction);
