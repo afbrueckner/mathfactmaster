@@ -49,7 +49,7 @@ export function setInStorage<T>(key: string, value: T): void {
 
 // Current student management
 export function getCurrentStudentId(): string {
-  return getFromStorage(STORAGE_KEYS.CURRENT_STUDENT, "student-1");
+  return getFromStorage(STORAGE_KEYS.CURRENT_STUDENT, "");
 }
 
 export function setCurrentStudentId(studentId: string): void {
@@ -58,16 +58,7 @@ export function setCurrentStudentId(studentId: string): void {
 
 // Students list management
 export function getAllStudents(): Student[] {
-  return getFromStorage(STORAGE_KEYS.STUDENTS_LIST, [
-    {
-      id: "student-1",
-      name: "Alex Rodriguez",
-      grade: 6,
-      section: "A",
-      initials: "AR",
-      createdAt: new Date()
-    }
-  ]);
+  return getFromStorage(STORAGE_KEYS.STUDENTS_LIST, []);
 }
 
 export function addStudent(student: Student): void {

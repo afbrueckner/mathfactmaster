@@ -112,16 +112,7 @@ export class MemStorage implements IStorage {
   }
 
   private initializeDefaultData() {
-    // Initialize default student
-    const defaultStudent: Student = {
-      id: "student-1",
-      name: "Alex Rodriguez",
-      grade: 6,
-      section: "A",
-      initials: "AR",
-      createdAt: new Date(),
-    };
-    this.students.set(defaultStudent.id, defaultStudent);
+    // No default students - users start with clean slate
 
     // Initialize fact categories
     const factCategoriesData: FactCategory[] = [
