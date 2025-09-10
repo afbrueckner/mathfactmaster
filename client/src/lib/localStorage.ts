@@ -163,7 +163,18 @@ export function setPoints(points: StudentPoints): void {
 }
 
 export function addPoints(amount: number, reason: string): void {
-  const points = getPoints();
+  const currentId = getCurrentStudentId();
+  if (!currentId) return;
+  
+  const points = getPoints() || {
+    id: `points-${Date.now()}`,
+    studentId: currentId,
+    totalPoints: 0,
+    spentPoints: 0,
+    availablePoints: 0,
+    updatedAt: new Date()
+  };
+  
   const newPoints = {
     ...points,
     totalPoints: points.totalPoints + amount,
@@ -178,18 +189,19 @@ export function addPoints(amount: number, reason: string): void {
 
 export function spendPoints(amount: number, reason: string): boolean {
   const points = getPoints();
-  if (points.availablePoints >= amount) {
-    const newPoints = {
-      ...points,
-      spentPoints: points.spentPoints + amount,
-      availablePoints: points.availablePoints - amount,
-      updatedAt: new Date()
-    };
-    setPoints(newPoints);
-    addTransaction(-amount, reason);
-    return true;
+  if (!points || points.availablePoints < amount) {
+    return false;
   }
-  return false;
+  
+  const newPoints = {
+    ...points,
+    spentPoints: points.spentPoints + amount,
+    availablePoints: points.availablePoints - amount,
+    updatedAt: new Date()
+  };
+  setPoints(newPoints);
+  addTransaction(-amount, reason);
+  return true;
 }
 
 // Transactions (scoped to current user)
