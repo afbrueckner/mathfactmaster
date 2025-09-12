@@ -32,7 +32,7 @@ export default function QuickLooks() {
     }) => {
       return apiRequest(`/api/students/${currentStudentId}/quick-looks`, {
         method: "POST",
-        body: sessionData
+        body: JSON.stringify(sessionData)
       });
     },
     onSuccess: () => {
@@ -64,7 +64,7 @@ export default function QuickLooks() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header student={defaultStudent} />
+      <Header />
       <Navigation />
       
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -104,7 +104,7 @@ export default function QuickLooks() {
             {isSessionActive ? (
               <QuickLooksDisplay 
                 onComplete={handleCompleteSession} 
-                studentId={defaultStudent.id}
+                studentId={currentStudentId}
                 enableTeacherMode={teacherMode}
               />
             ) : (
@@ -200,7 +200,7 @@ export default function QuickLooks() {
           
           <TabsContent value="analytics">
             <div className="bg-white rounded-xl shadow-sm p-6">
-              <QuickLooksAnalytics studentId={defaultStudent.id} />
+              <QuickLooksAnalytics studentId={currentStudentId} />
             </div>
           </TabsContent>
         </Tabs>
