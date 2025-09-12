@@ -229,7 +229,7 @@ export function StudentSelectionScreen() {
 
         {/* Footer */}
         <div className="text-center mt-6 text-sm text-gray-500">
-          <p>Bay-Williams & Kling Framework • Math Fact Fluency Practice</p>
+          <p>based on Bay-Williams Framework • Math Fact Fluency Practice</p>
         </div>
       </div>
     </div>

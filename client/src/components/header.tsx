@@ -14,7 +14,7 @@ export function Header() {
             </div>
             <div>
               <h1 className="text-xl font-bold text-gray-900 font-serif">Math Fact Fluency</h1>
-              <p className="text-xs text-gray-600">Bay-Williams & Kling Framework</p>
+              <p className="text-xs text-gray-600">based on Bay-Williams Framework</p>
             </div>
           </div>
           <div className="flex items-center space-x-3">
