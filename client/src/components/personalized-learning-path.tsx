@@ -25,7 +25,7 @@ export function PersonalizedLearningPath({ studentId }: PersonalizedLearningPath
   });
 
   useEffect(() => {
-    if (progress.length > 0 && factCategories.length > 0) {
+    if (progress && factCategories && progress.length > 0 && factCategories.length > 0) {
       const analysis = LearningPathEngine.analyzeLearningPath({
         studentProgress: progress,
         factCategories,

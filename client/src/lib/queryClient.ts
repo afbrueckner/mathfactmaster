@@ -3,7 +3,8 @@ import { mockApi } from "./mockApi";
 
 // Map API endpoints to mock functions
 const apiRouteMap: Record<string, (params?: any) => Promise<any>> = {
-  // Student endpoints
+  // Student endpoints  
+  '/api/students/current': () => mockApi.getStudent('current'),
   '/api/students/student-1': () => mockApi.getStudent('student-1'),
   
   // Progress endpoints
