@@ -2,6 +2,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useLocation } from "wouter";
 import { StudentProgress, FactCategory } from "@shared/schema";
 
 interface DerivedStrategiesProps {
@@ -10,6 +11,7 @@ interface DerivedStrategiesProps {
 }
 
 export function DerivedStrategies({ progress, factCategories }: DerivedStrategiesProps) {
+  const [, setLocation] = useLocation();
   // Focus on derived strategy categories
   const derivedCategories = factCategories.filter(cat => 
     cat.category === "derived" || 
@@ -39,6 +41,11 @@ export function DerivedStrategies({ progress, factCategories }: DerivedStrategie
       case "mastery": return 100;
       default: return 0;
     }
+  };
+
+  const handlePracticeStrategy = (strategyTitle: string) => {
+    // Navigate to games page where students can find relevant practice activities
+    setLocation("/games");
   };
 
   const strategySuggestions = [
@@ -127,7 +134,10 @@ export function DerivedStrategies({ progress, factCategories }: DerivedStrategie
                 <Button 
                   size="sm" 
                   variant="outline" 
-                  className="text-xs"
+                  className="text-xs relative z-10"
+                  onClick={() => handlePracticeStrategy(strategy.title)}
+                  data-testid={`button-practice-${strategy.title.toLowerCase().replace(/\s+/g, '-')}`}
+                  style={{ pointerEvents: 'auto' }}
                 >
                   Practice This Strategy
                 </Button>
