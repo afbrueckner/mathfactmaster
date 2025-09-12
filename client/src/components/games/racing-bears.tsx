@@ -62,11 +62,13 @@ export function RacingBears({ onComplete, onExit }: RacingBearsProps) {
     const newCorrectAnswers = gameState.correctAnswers + (isCorrect ? 1 : 0);
     const newQuestionsAnswered = gameState.questionsAnswered + 1;
     
+    let newBearPosition = bearPositions[selectedBear];
     if (isCorrect) {
       // Move the selected bear forward
+      newBearPosition += 10;
       setBearPositions(prev => {
         const newPositions = [...prev];
-        newPositions[selectedBear] += 10;
+        newPositions[selectedBear] = newBearPosition;
         return newPositions;
       });
       setGameState(prev => ({ ...prev, score: prev.score + 10 }));
@@ -78,11 +80,12 @@ export function RacingBears({ onComplete, onExit }: RacingBearsProps) {
       correctAnswers: newCorrectAnswers
     }));
 
-    // Check if any bear reached the finish line (100)
-    if (bearPositions[selectedBear] >= 100 || newQuestionsAnswered >= 15) {
+    // Check if any bear reached the finish line (100) - use the new position
+    if (newBearPosition >= 100 || newQuestionsAnswered >= 15) {
       const accuracy = Math.round((newCorrectAnswers / newQuestionsAnswered) * 100);
+      const finalScore = gameState.score + (isCorrect ? 10 : 0);
       setGameState(prev => ({ ...prev, gameComplete: true }));
-      onComplete(gameState.score + (isCorrect ? 10 : 0), accuracy, ['counting', 'memorization']);
+      onComplete(finalScore, accuracy, ['counting', 'memorization']);
       return;
     }
 

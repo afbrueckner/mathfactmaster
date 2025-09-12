@@ -8,6 +8,7 @@ import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { StudentProgress, FactCategory } from '@shared/schema';
 import { LearningPathEngine, LearningPath, LearningPathRecommendation, Milestone } from '@shared/learningPath';
+import { getProgress, getFactCategories } from '@/lib/localStorage';
 
 interface PersonalizedLearningPathProps {
   studentId: string;
@@ -15,27 +16,45 @@ interface PersonalizedLearningPathProps {
 
 export function PersonalizedLearningPath({ studentId }: PersonalizedLearningPathProps) {
   const [learningPath, setLearningPath] = useState<LearningPath | null>(null);
-
-  const { data: progress = [] } = useQuery<StudentProgress[]>({
-    queryKey: [`/api/students/${studentId}/progress`],
-  });
-
-  const { data: factCategories = [] } = useQuery<FactCategory[]>({
-    queryKey: ["/api/fact-categories"],
-  });
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (progress && factCategories && progress.length > 0 && factCategories.length > 0) {
-      const analysis = LearningPathEngine.analyzeLearningPath({
-        studentProgress: progress,
-        factCategories,
-        studentId
-      });
-      setLearningPath(analysis);
-    }
-  }, [progress, factCategories, studentId]);
+    const loadLearningPath = async () => {
+      try {
+        setIsLoading(true);
+        
+        // Get data from localStorage
+        const studentProgress = getProgress();
+        const factCategories = getFactCategories();
+        
+        // Analyze learning path if we have data
+        if (studentProgress.length > 0 && factCategories.length > 0) {
+          const analysis = LearningPathEngine.analyzeLearningPath({
+            studentProgress,
+            factCategories,
+            studentId
+          });
+          setLearningPath(analysis);
+        } else {
+          // Generate default learning path for new students
+          const defaultAnalysis = LearningPathEngine.analyzeLearningPath({
+            studentProgress: [],
+            factCategories,
+            studentId
+          });
+          setLearningPath(defaultAnalysis);
+        }
+      } catch (error) {
+        console.error('Error loading learning path:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-  if (!learningPath) {
+    loadLearningPath();
+  }, [studentId]);
+
+  if (isLoading || !learningPath) {
     return (
       <div className="space-y-6">
         <Card>
