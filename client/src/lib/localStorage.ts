@@ -509,6 +509,16 @@ export function getGames(): Game[] {
       targetFacts: ["mixed addition", "mixed subtraction", "strategic thinking"],
       emoji: "🎲",
       difficulty: "advanced"
+    },
+    {
+      id: "lucky-thirteen",
+      name: "Lucky 13",
+      description: "Pick 2 cards that add up as close to 13 as possible. Derived fact strategies game!",
+      operation: "addition",
+      category: "derived",
+      targetFacts: ["target sum strategies", "addition combinations", "mental math"],
+      emoji: "🍀",
+      difficulty: "intermediate"
     }
   ];
 }
