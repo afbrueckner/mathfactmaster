@@ -20,14 +20,12 @@ export default function Games() {
   const [currentGame, setCurrentGame] = useState<string | null>(null);
   const queryClient = useQueryClient();
   
-  const defaultStudent: Student = {
-    id: "student-1",
-    name: "Alex Rodriguez",
-    grade: 6,
-    section: "A",
-    initials: "AR",
-    createdAt: new Date()
-  };
+  // Get current student from user management system
+  const { data: currentStudent } = useQuery<Student | null>({
+    queryKey: ["/api/students/current"]
+  });
+  
+  const currentStudentId = currentStudent?.id || "default-student";
 
   const { data: games = [] } = useQuery<Game[]>({
     queryKey: ["/api/games"],
@@ -41,15 +39,15 @@ export default function Games() {
       timeSpent: number;
       strategiesUsed: string[];
     }) => {
-      return apiRequest("/api/students/student-1/game-results", {
+      return apiRequest(`/api/students/${currentStudentId}/game-results`, {
         method: "POST",
-        body: JSON.stringify({ ...result, studentId: "student-1" })
+        body: JSON.stringify({ ...result, studentId: currentStudentId })
       });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/students/student-1/game-results"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/students/student-1/progress"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/students/student-1/points"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/students", currentStudentId, "game-results"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/students", currentStudentId, "progress"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/students", currentStudentId, "points"] });
     }
   });
 
@@ -89,7 +87,7 @@ export default function Games() {
   if (currentGame === "racing-bears") {
     return (
       <div className="min-h-screen bg-gray-50">
-        <Header student={defaultStudent} />
+        <Header />
         <Navigation />
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <RacingBears 
@@ -106,7 +104,7 @@ export default function Games() {
   if (currentGame === "doubles-bingo") {
     return (
       <div className="min-h-screen bg-gray-50">
-        <Header student={defaultStudent} />
+        <Header />
         <Navigation />
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <DoublesBingo 
@@ -123,7 +121,7 @@ export default function Games() {
   if (currentGame === "sum-war") {
     return (
       <div className="min-h-screen bg-gray-50">
-        <Header student={defaultStudent} />
+        <Header />
         <Navigation />
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <SumWar 
@@ -140,7 +138,7 @@ export default function Games() {
   if (currentGame === "trios") {
     return (
       <div className="min-h-screen bg-gray-50">
-        <Header student={defaultStudent} />
+        <Header />
         <Navigation />
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <Trios 
@@ -157,7 +155,7 @@ export default function Games() {
   if (currentGame === "salute") {
     return (
       <div className="min-h-screen bg-gray-50">
-        <Header student={defaultStudent} />
+        <Header />
         <Navigation />
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <Salute 
@@ -174,7 +172,7 @@ export default function Games() {
   if (currentGame === "three-dice-take") {
     return (
       <div className="min-h-screen bg-gray-50">
-        <Header student={defaultStudent} />
+        <Header />
         <Navigation />
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <ThreeDiceTake 
@@ -191,7 +189,7 @@ export default function Games() {
   if (currentGame === "lucky-thirteen") {
     return (
       <div className="min-h-screen bg-gray-50">
-        <Header student={defaultStudent} />
+        <Header />
         <Navigation />
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <LuckyThirteen 

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Header } from "@/components/header";
 import { Navigation } from "@/components/navigation";
 import { QuickLooksDisplay } from "@/components/quick-looks-display";
@@ -15,14 +15,12 @@ export default function QuickLooks() {
   const [teacherMode, setTeacherMode] = useState(false);
   const queryClient = useQueryClient();
   
-  const defaultStudent: Student = {
-    id: "student-1",
-    name: "Alex Rodriguez",
-    grade: 6,
-    section: "A",
-    initials: "AR",
-    createdAt: new Date()
-  };
+  // Get current student from user management system
+  const { data: currentStudent } = useQuery<Student | null>({
+    queryKey: ["/api/students/current"]
+  });
+  
+  const currentStudentId = currentStudent?.id || "default-student";
 
   const saveSessionMutation = useMutation({
     mutationFn: async (sessionData: {
@@ -32,13 +30,13 @@ export default function QuickLooks() {
       accuracy: boolean;
       strategy: string;
     }) => {
-      return apiRequest("/api/students/student-1/quick-looks", {
+      return apiRequest(`/api/students/${currentStudentId}/quick-looks`, {
         method: "POST",
         body: sessionData
       });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/students/student-1/quick-looks"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/students", currentStudentId, "quick-looks"] });
     }
   });
 

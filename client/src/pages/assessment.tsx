@@ -9,17 +9,15 @@ import { apiRequest } from "@/lib/queryClient";
 export default function Assessment() {
   const queryClient = useQueryClient();
   
-  const defaultStudent: Student = {
-    id: "student-1",
-    name: "Alex Rodriguez",
-    grade: 6,
-    section: "A",
-    initials: "AR",
-    createdAt: new Date()
-  };
+  // Get current student from user management system
+  const { data: currentStudent } = useQuery<Student | null>({
+    queryKey: ["/api/students/current"]
+  });
+  
+  const currentStudentId = currentStudent?.id || "default-student";
 
   const { data: observations = [] } = useQuery<AssessmentObservation[]>({
-    queryKey: ["/api/students/student-1/observations"],
+    queryKey: ["/api/students", currentStudentId, "observations"],
   });
 
   const addObservationMutation = useMutation({
@@ -29,13 +27,13 @@ export default function Assessment() {
       factArea: string;
       phase: string;
     }) => {
-      return apiRequest("/api/students/student-1/observations", {
+      return apiRequest(`/api/students/${currentStudentId}/observations`, {
         method: "POST",
-        body: JSON.stringify({ ...observation, studentId: "student-1" })
+        body: JSON.stringify({ ...observation, studentId: currentStudentId })
       });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/students/student-1/observations"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/students", currentStudentId, "observations"] });
     }
   });
 
@@ -50,7 +48,7 @@ export default function Assessment() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header student={defaultStudent} />
+      <Header />
       <Navigation />
       
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

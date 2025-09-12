@@ -1,22 +1,20 @@
+import { useQuery } from "@tanstack/react-query";
 import { Header } from "@/components/header";
 import { Navigation } from "@/components/navigation";
 import { PersonalizedLearningPath } from "@/components/personalized-learning-path";
 import { Student } from "@shared/schema";
 
 export default function LearningPathPage() {
-  // Default student for demo
-  const defaultStudent: Student = {
-    id: "student-1",
-    name: "Alex Rodriguez",
-    grade: 6,
-    section: "A",
-    initials: "AR",
-    createdAt: new Date()
-  };
+  // Get current student from user management system
+  const { data: currentStudent } = useQuery<Student | null>({
+    queryKey: ["/api/students/current"]
+  });
+  
+  const currentStudentId = currentStudent?.id || "default-student";
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header student={defaultStudent} />
+      <Header />
       <Navigation />
       
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -27,7 +25,7 @@ export default function LearningPathPage() {
           </p>
         </div>
 
-        <PersonalizedLearningPath studentId={defaultStudent.id} />
+        <PersonalizedLearningPath studentId={currentStudentId} />
       </main>
     </div>
   );
