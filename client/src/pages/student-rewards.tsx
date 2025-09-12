@@ -9,6 +9,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Star, Trophy, ShoppingCart, History, Sparkles, Home, ArrowLeft } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { Link } from "wouter";
+import { getStudent } from "@/lib/localStorage";
 import type { StudentPoints, RewardItem, StudentReward, StudentAvatar, PointTransaction } from "@shared/schema";
 
 const STUDENT_ID = "student-1";
@@ -25,6 +26,7 @@ function getItemCost(item: RewardItem): number {
 export default function StudentRewards() {
   const queryClient = useQueryClient();
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const currentStudent = getStudent();
 
   // Fetch student data
   const { data: points, isLoading: pointsLoading } = useQuery<StudentPoints>({
@@ -100,7 +102,7 @@ export default function StudentRewards() {
 
     try {
       await spendPointsMutation.mutateAsync({
-        amount: cost,
+        points: cost,
         reason: `Unlocked ${item.name}`,
       });
       await unlockRewardMutation.mutateAsync(item.id);
@@ -231,7 +233,7 @@ export default function StudentRewards() {
             ))}
           </div>
           <div className="text-center">
-            <h3 className="font-semibold">Alex's Avatar</h3>
+            <h3 className="font-semibold">{currentStudent?.name || 'Your'} Avatar</h3>
             <p className="text-sm text-muted-foreground">
               {equippedAccessories.length > 0 
                 ? `Wearing ${equippedAccessories.length} item${equippedAccessories.length > 1 ? 's' : ''}` 
