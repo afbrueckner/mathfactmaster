@@ -7,6 +7,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 interface TriosBoardCell {
   number: number;
   covered: boolean;
+  player: 1 | 2 | null; // Which player claimed this square
+  isPartOfTrio: boolean; // Is this square part of a completed trio
 }
 
 interface TriosProps {
@@ -15,14 +17,14 @@ interface TriosProps {
 }
 
 export function Trios({ onComplete, onExit }: TriosProps) {
-  const [score, setScore] = useState(0);
+  const [currentPlayer, setCurrentPlayer] = useState<1 | 2>(1);
+  const [player1Trios, setPlayer1Trios] = useState(0);
+  const [player2Trios, setPlayer2Trios] = useState(0);
   const [currentCard, setCurrentCard] = useState<number | null>(null);
   const [cardDeck, setCardDeck] = useState<number[]>([]);
   const [deckPosition, setDeckPosition] = useState(0);
   const [triosBoard, setTriosBoard] = useState<TriosBoardCell[]>([]);
   const [feedback, setFeedback] = useState("");
-  const [correctSelections, setCorrectSelections] = useState(0);
-  const [totalSelections, setTotalSelections] = useState(0);
   const [gameComplete, setGameComplete] = useState(false);
   const [strategiesUsed, setStrategiesUsed] = useState<string[]>([]);
   const [selectedMultiple, setSelectedMultiple] = useState(5);
@@ -42,7 +44,9 @@ export function Trios({ onComplete, onExit }: TriosProps) {
     
     const board = boardNumbers.map(number => ({
       number,
-      covered: false
+      covered: false,
+      player: null,
+      isPartOfTrio: false
     }));
     
     setTriosBoard(board);
@@ -72,14 +76,17 @@ export function Trios({ onComplete, onExit }: TriosProps) {
     setGameStarted(true);
   };
 
-  const checkForThreeInARow = (board: TriosBoardCell[]): boolean => {
+  const checkForThreeInARow = (board: TriosBoardCell[], player: 1 | 2): { found: boolean; indices: number[] } => {
     // Check rows
     for (let row = 0; row < 5; row++) {
       for (let col = 0; col <= 2; col++) {
-        if (board[row * 5 + col].covered && 
-            board[row * 5 + col + 1].covered && 
-            board[row * 5 + col + 2].covered) {
-          return true;
+        const idx1 = row * 5 + col;
+        const idx2 = row * 5 + col + 1;
+        const idx3 = row * 5 + col + 2;
+        if (board[idx1].player === player && !board[idx1].isPartOfTrio &&
+            board[idx2].player === player && !board[idx2].isPartOfTrio &&
+            board[idx3].player === player && !board[idx3].isPartOfTrio) {
+          return { found: true, indices: [idx1, idx2, idx3] };
         }
       }
     }
@@ -87,10 +94,13 @@ export function Trios({ onComplete, onExit }: TriosProps) {
     // Check columns
     for (let col = 0; col < 5; col++) {
       for (let row = 0; row <= 2; row++) {
-        if (board[row * 5 + col].covered && 
-            board[(row + 1) * 5 + col].covered && 
-            board[(row + 2) * 5 + col].covered) {
-          return true;
+        const idx1 = row * 5 + col;
+        const idx2 = (row + 1) * 5 + col;
+        const idx3 = (row + 2) * 5 + col;
+        if (board[idx1].player === player && !board[idx1].isPartOfTrio &&
+            board[idx2].player === player && !board[idx2].isPartOfTrio &&
+            board[idx3].player === player && !board[idx3].isPartOfTrio) {
+          return { found: true, indices: [idx1, idx2, idx3] };
         }
       }
     }
@@ -98,10 +108,13 @@ export function Trios({ onComplete, onExit }: TriosProps) {
     // Check diagonals (top-left to bottom-right)
     for (let row = 0; row <= 2; row++) {
       for (let col = 0; col <= 2; col++) {
-        if (board[row * 5 + col].covered && 
-            board[(row + 1) * 5 + col + 1].covered && 
-            board[(row + 2) * 5 + col + 2].covered) {
-          return true;
+        const idx1 = row * 5 + col;
+        const idx2 = (row + 1) * 5 + col + 1;
+        const idx3 = (row + 2) * 5 + col + 2;
+        if (board[idx1].player === player && !board[idx1].isPartOfTrio &&
+            board[idx2].player === player && !board[idx2].isPartOfTrio &&
+            board[idx3].player === player && !board[idx3].isPartOfTrio) {
+          return { found: true, indices: [idx1, idx2, idx3] };
         }
       }
     }
@@ -109,15 +122,18 @@ export function Trios({ onComplete, onExit }: TriosProps) {
     // Check diagonals (top-right to bottom-left)
     for (let row = 0; row <= 2; row++) {
       for (let col = 2; col < 5; col++) {
-        if (board[row * 5 + col].covered && 
-            board[(row + 1) * 5 + col - 1].covered && 
-            board[(row + 2) * 5 + col - 2].covered) {
-          return true;
+        const idx1 = row * 5 + col;
+        const idx2 = (row + 1) * 5 + col - 1;
+        const idx3 = (row + 2) * 5 + col - 2;
+        if (board[idx1].player === player && !board[idx1].isPartOfTrio &&
+            board[idx2].player === player && !board[idx2].isPartOfTrio &&
+            board[idx3].player === player && !board[idx3].isPartOfTrio) {
+          return { found: true, indices: [idx1, idx2, idx3] };
         }
       }
     }
     
-    return false;
+    return { found: false, indices: [] };
   };
 
   const drawNextCard = () => {
@@ -130,9 +146,10 @@ export function Trios({ onComplete, onExit }: TriosProps) {
   };
 
   const handleSkip = () => {
-    setFeedback("Card skipped!");
+    setFeedback(`Player ${currentPlayer} skipped this card`);
     setTimeout(() => {
       setFeedback("");
+      setCurrentPlayer(currentPlayer === 1 ? 2 : 1);
       drawNextCard();
     }, 1000);
   };
@@ -143,50 +160,63 @@ export function Trios({ onComplete, onExit }: TriosProps) {
     const targetProduct = currentCard * selectedMultiple;
     const selectedNumber = triosBoard[index].number;
     
-    setTotalSelections(totalSelections + 1);
-    
     if (selectedNumber === targetProduct) {
       const newBoard = [...triosBoard];
       newBoard[index].covered = true;
-      setTriosBoard(newBoard);
+      newBoard[index].player = currentPlayer;
       
-      setScore(score + 10);
-      setCorrectSelections(correctSelections + 1);
-      setFeedback(`Correct! ${currentCard} × ${selectedMultiple} = ${targetProduct}`);
+      const playerColor = currentPlayer === 1 ? 'blue' : 'red';
+      setFeedback(`✓ Player ${currentPlayer} correct! ${currentCard} × ${selectedMultiple} = ${targetProduct}`);
       
       const strategyName = `counting by ${selectedMultiple}s (×${selectedMultiple})`;
       setStrategiesUsed([...strategiesUsed, strategyName]);
       
-      // Check for three in a row
-      if (checkForThreeInARow(newBoard)) {
-        setScore(score + 50); // Bonus for three in a row
-        setFeedback("THREE IN A ROW! You won! +50 bonus points!");
-        setTimeout(() => {
-          setGameComplete(true);
-        }, 2500);
-        return;
+      // Check for three in a row for current player
+      const trioResult = checkForThreeInARow(newBoard, currentPlayer);
+      if (trioResult.found) {
+        // Mark the trio squares
+        trioResult.indices.forEach(idx => {
+          newBoard[idx].isPartOfTrio = true;
+        });
+        
+        // Increment player's trio count
+        if (currentPlayer === 1) {
+          setPlayer1Trios(player1Trios + 1);
+        } else {
+          setPlayer2Trios(player2Trios + 1);
+        }
+        
+        setFeedback(`🎉 Player ${currentPlayer} got a TRIO! +1 point`);
       }
-    } else {
-      setFeedback(`Not quite. ${currentCard} × ${selectedMultiple} = ${targetProduct}, not ${selectedNumber}`);
-    }
-
-    // Draw next card after short delay (only if game isn't complete)
-    setTimeout(() => {
-      if (!gameComplete) {
+      
+      setTriosBoard(newBoard);
+      
+      // Switch players after short delay
+      setTimeout(() => {
         setFeedback("");
+        setCurrentPlayer(currentPlayer === 1 ? 2 : 1);
         drawNextCard();
-      }
-    }, 2000);
+      }, 2000);
+    } else {
+      setFeedback(`✗ Not quite. ${currentCard} × ${selectedMultiple} = ${targetProduct}, not ${selectedNumber}`);
+      
+      // Switch players after wrong answer
+      setTimeout(() => {
+        setFeedback("");
+        setCurrentPlayer(currentPlayer === 1 ? 2 : 1);
+        drawNextCard();
+      }, 2000);
+    }
   };
 
   const handleComplete = () => {
-    const accuracy = totalSelections > 0 ? Math.round((correctSelections / totalSelections) * 100) : 0;
     const uniqueStrategies = Array.from(new Set(strategiesUsed));
-    onComplete(score, accuracy, uniqueStrategies);
+    const totalScore = (player1Trios + player2Trios) * 10;
+    onComplete(totalScore, 100, uniqueStrategies);
   };
 
   if (gameComplete) {
-    const accuracy = totalSelections > 0 ? Math.round((correctSelections / totalSelections) * 100) : 0;
+    const winner = player1Trios > player2Trios ? 1 : player2Trios > player1Trios ? 2 : 0;
 
     return (
       <div className="bg-white rounded-xl shadow-lg p-8 text-center max-w-2xl mx-auto">
@@ -194,21 +224,32 @@ export function Trios({ onComplete, onExit }: TriosProps) {
           <span className="text-white text-3xl">🎲</span>
         </div>
         <h2 className="text-2xl font-bold text-gray-800 mb-4">
-          {triosBoard.some(cell => cell.covered) && checkForThreeInARow(triosBoard) ? "THREE IN A ROW! You Won!" : "Game Complete!"}
+          Trios Game Complete!
         </h2>
         
-        <div className="grid md:grid-cols-3 gap-4 mb-6">
-          <div className="bg-blue-50 rounded-lg p-4">
-            <p className="text-2xl font-bold text-blue-600">{score}</p>
-            <p className="text-sm text-blue-700">Points Earned</p>
+        {winner > 0 && (
+          <p className="text-xl font-bold mb-4" data-testid="winner-announcement">
+            <span className={winner === 1 ? "text-blue-600" : "text-red-600"}>
+              Player {winner} Wins!
+            </span>
+          </p>
+        )}
+        {winner === 0 && (
+          <p className="text-xl font-bold mb-4 text-gray-600" data-testid="tie-announcement">
+            It's a Tie!
+          </p>
+        )}
+        
+        <div className="grid grid-cols-2 gap-6 mb-6">
+          <div className="bg-blue-50 rounded-lg p-6 border-2 border-blue-500">
+            <h3 className="text-lg font-semibold text-blue-600 mb-2">Player 1</h3>
+            <p className="text-4xl font-bold text-blue-600" data-testid="player1-trios">{player1Trios}</p>
+            <p className="text-sm text-blue-700">Trios</p>
           </div>
-          <div className="bg-green-50 rounded-lg p-4">
-            <p className="text-2xl font-bold text-green-600">{accuracy}%</p>
-            <p className="text-sm text-green-700">Accuracy</p>
-          </div>
-          <div className="bg-purple-50 rounded-lg p-4">
-            <p className="text-2xl font-bold text-purple-600">{correctSelections}</p>
-            <p className="text-sm text-purple-700">Correct Answers</p>
+          <div className="bg-red-50 rounded-lg p-6 border-2 border-red-500">
+            <h3 className="text-lg font-semibold text-red-600 mb-2">Player 2</h3>
+            <p className="text-4xl font-bold text-red-600" data-testid="player2-trios">{player2Trios}</p>
+            <p className="text-sm text-red-700">Trios</p>
           </div>
         </div>
 
@@ -226,10 +267,10 @@ export function Trios({ onComplete, onExit }: TriosProps) {
         )}
 
         <div className="flex space-x-4 justify-center">
-          <Button onClick={handleComplete} className="bg-primary-500 hover:bg-primary-600">
+          <Button onClick={handleComplete} className="bg-primary-500 hover:bg-primary-600" data-testid="save-results">
             Save Results
           </Button>
-          <Button variant="outline" onClick={onExit}>
+          <Button variant="outline" onClick={onExit} data-testid="back-to-games">
             Back to Games
           </Button>
         </div>
@@ -288,7 +329,19 @@ export function Trios({ onComplete, onExit }: TriosProps) {
         <div className="flex justify-center items-center space-x-4 mb-4">
           <span className="text-lg font-semibold text-gray-600">Card {deckPosition + 1} of {cardDeck.length}</span>
           <div className="w-px h-6 bg-gray-300"></div>
-          <span className="text-lg font-semibold text-gray-600">Score: {score}</span>
+          <Badge 
+            className={`text-lg px-4 py-2 ${
+              currentPlayer === 1 
+                ? 'bg-blue-500 hover:bg-blue-600 text-white' 
+                : 'bg-red-500 hover:bg-red-600 text-white'
+            }`}
+            data-testid="current-player"
+          >
+            Player {currentPlayer}'s Turn
+          </Badge>
+          <div className="w-px h-6 bg-gray-300"></div>
+          <span className="text-lg font-semibold text-blue-600">P1 Trios: {player1Trios}</span>
+          <span className="text-lg font-semibold text-red-600">P2 Trios: {player2Trios}</span>
         </div>
         
         {currentCard && (
@@ -310,20 +363,39 @@ export function Trios({ onComplete, onExit }: TriosProps) {
         <div className="mb-6">
           <h3 className="font-semibold text-gray-800 mb-4 text-center">Trios Board</h3>
           <div className="grid grid-cols-5 gap-2 max-w-md mx-auto">
-            {triosBoard.map((cell, index) => (
-              <button
-                key={index}
-                onClick={() => handleBoardClick(index)}
-                className={`aspect-square text-lg font-bold rounded-lg border-2 transition-all ${
-                  cell.covered
-                    ? "bg-green-500 text-white border-green-600"
-                    : "bg-white text-gray-800 border-gray-300 hover:border-primary-500 hover:bg-primary-50"
-                }`}
-                disabled={feedback !== "" || cell.covered}
-              >
-                {cell.covered ? "✓" : cell.number}
-              </button>
-            ))}
+            {triosBoard.map((cell, index) => {
+              let cellStyle = "";
+              let cellContent: string | number = cell.number;
+              
+              if (cell.isPartOfTrio) {
+                // Completed trio - gold/yellow color
+                cellStyle = "bg-yellow-400 text-gray-900 border-yellow-600 font-bold shadow-lg";
+                cellContent = "★";
+              } else if (cell.player === 1) {
+                // Player 1 claimed - blue
+                cellStyle = "bg-blue-500 text-white border-blue-600";
+                cellContent = "✓";
+              } else if (cell.player === 2) {
+                // Player 2 claimed - red
+                cellStyle = "bg-red-500 text-white border-red-600";
+                cellContent = "✓";
+              } else {
+                // Unclaimed
+                cellStyle = "bg-white text-gray-800 border-gray-300 hover:border-primary-500 hover:bg-primary-50";
+              }
+              
+              return (
+                <button
+                  key={index}
+                  onClick={() => handleBoardClick(index)}
+                  className={`aspect-square text-lg font-bold rounded-lg border-2 transition-all ${cellStyle}`}
+                  disabled={feedback !== "" || cell.covered}
+                  data-testid={`cell-${index}`}
+                >
+                  {cellContent}
+                </button>
+              );
+            })}
           </div>
         </div>
       )}
