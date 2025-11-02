@@ -2,32 +2,16 @@
 import {
   getStudent,
   getProgress,
-  getPoints,
-  getStudentRewards,
-  getAvatar,
-  getTransactions,
   getObservations,
-  getRewardItems,
   getFactCategories,
   getGames,
-  addPoints,
-  spendPoints,
-  unlockReward,
-  equipReward,
   updateProgress,
   addObservation,
   getFromStorage,
-  setInStorage,
-  addTransaction
+  setInStorage
 } from './localStorage';
 
-// Helper to extract cost from unlockCondition
-function getItemCost(item: any): number {
-  if (item.unlockCondition && item.unlockCondition.type === 'points') {
-    return item.unlockCondition.value;
-  }
-  return 0;
-}
+// REMOVED: Helper functions for rewards system
 
 // Simulate API delay for realistic UX
 const delay = (ms: number = 100) => new Promise(resolve => setTimeout(resolve, ms));
@@ -51,60 +35,8 @@ export const mockApi = {
     return { success: true };
   },
 
-  // Points endpoints
-  async getStudentPoints(studentId: string) {
-    await delay();
-    return getPoints();
-  },
-
-  async addStudentPoints(studentId: string, amount: number, reason: string) {
-    await delay();
-    addPoints(amount, reason);
-    return getPoints();
-  },
-
-  async spendStudentPoints(studentId: string, amount: number, reason: string) {
-    await delay();
-    const success = spendPoints(amount, reason);
-    if (success) {
-      return getPoints();
-    } else {
-      throw new Error('Insufficient points');
-    }
-  },
-
-  // Rewards endpoints
-  async getStudentRewards(studentId: string) {
-    await delay();
-    return getStudentRewards();
-  },
-
-  async unlockStudentReward(studentId: string, rewardItemId: string) {
-    await delay();
-    return unlockReward(rewardItemId);
-  },
-
-  async equipStudentReward(studentId: string, rewardItemId: string) {
-    await delay();
-    const rewardItems = getRewardItems();
-    const item = rewardItems.find(item => item.id === rewardItemId);
-    if (item) {
-      equipReward(rewardItemId, item.category);
-    }
-    return { success: true };
-  },
-
-  // Avatar endpoints
-  async getStudentAvatar(studentId: string) {
-    await delay();
-    return getAvatar();
-  },
-
-  // Transaction endpoints
-  async getStudentTransactions(studentId: string) {
-    await delay();
-    return getTransactions();
-  },
+  // REMOVED: Points, Rewards, Avatar, and Transaction endpoints
+  // These features were removed to simplify the app and focus on strategy practice
 
   // Observation endpoints
   async getObservations(studentId: string) {
@@ -119,10 +51,6 @@ export const mockApi = {
   },
 
   // Static data endpoints
-  async getRewardItems() {
-    await delay();
-    return getRewardItems();
-  },
 
   async getFactCategories() {
     await delay();
@@ -138,7 +66,7 @@ export const mockApi = {
   async createGameResult(data: any) {
     await delay();
     // Add to localStorage game results
-    const results = getFromStorage('gameResults', []);
+    const results: any[] = getFromStorage('gameResults', []);
     const newResult = {
       id: `result-${Date.now()}`,
       studentId: data.studentId,
@@ -152,12 +80,7 @@ export const mockApi = {
     results.unshift(newResult);
     setInStorage('gameResults', results);
     
-    // Award points for game completion
-    const pointsEarned = Math.floor(data.score / 10) + Math.floor(data.accuracy / 20); // Points for score and accuracy
-    if (pointsEarned > 0) {
-      addPoints(pointsEarned, `Completed ${data.gameId}`);
-      addTransaction(pointsEarned, `Game: ${data.gameId} (Score: ${data.score})`);
-    }
+    // REMOVED: Points awarding - no longer using reward system
     
     return newResult;
   },
