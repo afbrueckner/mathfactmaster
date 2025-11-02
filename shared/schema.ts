@@ -42,6 +42,8 @@ export const games = pgTable("games", {
   operation: text("operation").notNull(),
   category: text("category").notNull(), // "foundational", "derived", "mixed"
   targetFacts: text("target_facts").array().notNull(),
+  strategiesPracticed: text("strategies_practiced").array().notNull(), // derived strategies this game helps build
+  foundationalFactsUsed: text("foundational_facts_used").array().notNull(), // which foundational facts are needed
   emoji: text("emoji").notNull(),
   difficulty: text("difficulty").notNull(), // "beginner", "intermediate", "advanced"
 });

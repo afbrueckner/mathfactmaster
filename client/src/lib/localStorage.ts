@@ -457,6 +457,8 @@ export function getGames(): Game[] {
       operation: "addition",
       category: "foundational",
       targetFacts: ["1+1", "2+1", "3+1", "1+2", "2+2", "3+2", "4+1", "5+1", "6+1", "7+1", "8+1", "9+1"],
+      strategiesPracticed: ["Plus 1", "Plus 2", "Counting On"],
+      foundationalFactsUsed: ["Addition Facts to 10"],
       emoji: "🐻",
       difficulty: "beginner"
     },
@@ -467,6 +469,8 @@ export function getGames(): Game[] {
       operation: "addition",
       category: "foundational",
       targetFacts: ["1+1", "2+2", "3+3", "4+4", "5+5", "6+6", "7+7", "8+8", "9+9"],
+      strategiesPracticed: ["Doubles", "Near Doubles"],
+      foundationalFactsUsed: ["Doubles Facts"],
       emoji: "🎯",
       difficulty: "beginner"
     },
@@ -477,6 +481,8 @@ export function getGames(): Game[] {
       operation: "addition",
       category: "derived",
       targetFacts: ["3+4", "5+6", "7+8", "4+5", "6+7", "8+9", "2+9", "3+8"],
+      strategiesPracticed: ["Make 10", "Near Doubles", "Part-Part-Whole"],
+      foundationalFactsUsed: ["Addition Facts to 20", "Combinations to 10"],
       emoji: "⚔️",
       difficulty: "intermediate"
     },
@@ -487,6 +493,8 @@ export function getGames(): Game[] {
       operation: "addition",
       category: "derived",
       targetFacts: ["combinations to 10", "combinations to 15", "combinations to 20"],
+      strategiesPracticed: ["Combinations to 10", "Part-Part-Whole", "Decomposing Numbers"],
+      foundationalFactsUsed: ["Addition Facts to 20", "Combinations to 10"],
       emoji: "🔢",
       difficulty: "intermediate"
     },
@@ -497,6 +505,8 @@ export function getGames(): Game[] {
       operation: "addition",
       category: "derived",
       targetFacts: ["missing addends", "part-whole relationships"],
+      strategiesPracticed: ["Part-Part-Whole", "Missing Addends", "Think Addition for Subtraction"],
+      foundationalFactsUsed: ["Addition Facts to 20"],
       emoji: "👋",
       difficulty: "intermediate"
     },
@@ -507,6 +517,8 @@ export function getGames(): Game[] {
       operation: "mixed",
       category: "advanced",
       targetFacts: ["mixed addition", "mixed subtraction", "strategic thinking"],
+      strategiesPracticed: ["Make 10", "Think Addition", "Decomposing Numbers", "Flexibility"],
+      foundationalFactsUsed: ["Addition Facts to 20", "Subtraction Facts", "Combinations to 10"],
       emoji: "🎲",
       difficulty: "advanced"
     },
@@ -517,6 +529,8 @@ export function getGames(): Game[] {
       operation: "addition",
       category: "derived",
       targetFacts: ["target sum strategies", "addition combinations", "mental math"],
+      strategiesPracticed: ["Make 10", "Combinations to 10", "Near Doubles", "Strategic Thinking"],
+      foundationalFactsUsed: ["Addition Facts to 20", "Combinations to 10"],
       emoji: "🍀",
       difficulty: "intermediate"
     }

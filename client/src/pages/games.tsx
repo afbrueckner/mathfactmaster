@@ -214,13 +214,13 @@ export default function Games() {
           <div className="bg-white rounded-xl shadow-sm p-6">
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h2 className="text-2xl font-bold text-gray-900 font-serif">Math Fact Games</h2>
+                <h2 className="text-2xl font-bold text-gray-900 font-serif">Strategy Practice Games</h2>
                 <p className="text-gray-600 mt-1">
-                  Research-based games for meaningful practice and fluency development
+                  Build math fact fluency through sustained practice with derived strategies
                 </p>
               </div>
               <div className="flex items-center space-x-2">
-                <i className="fas fa-gamepad text-primary-500 text-2xl"></i>
+                <span className="text-3xl">🎮</span>
                 <Badge variant="secondary" className="text-sm">
                   {filteredGames.length} Games Available
                 </Badge>

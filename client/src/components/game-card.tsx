@@ -57,10 +57,37 @@ export function GameCard({ game, onPlay }: GameCardProps) {
           {game.description}
         </p>
         
-        <div className="space-y-2">
-          <div className="flex items-center text-sm text-gray-500">
-            <Star className="h-4 w-4 mr-2" />
-            <span>Target Facts: {game.targetFacts.slice(0, 3).join(", ")}{game.targetFacts.length > 3 ? "..." : ""}</span>
+        <div className="space-y-3">
+          {/* Strategies Practiced */}
+          <div className="bg-purple-50 rounded-lg p-3 border border-purple-200">
+            <div className="flex items-start">
+              <span className="text-purple-600 font-semibold text-xs uppercase tracking-wide mb-1 block w-full">
+                🧠 Strategies Practiced
+              </span>
+            </div>
+            <div className="flex flex-wrap gap-1 mt-2">
+              {game.strategiesPracticed?.map((strategy, idx) => (
+                <Badge key={idx} variant="secondary" className="text-xs bg-purple-100 text-purple-800">
+                  {strategy}
+                </Badge>
+              ))}
+            </div>
+          </div>
+
+          {/* Foundational Facts Used */}
+          <div className="bg-blue-50 rounded-lg p-3 border border-blue-200">
+            <div className="flex items-start">
+              <span className="text-blue-600 font-semibold text-xs uppercase tracking-wide mb-1 block w-full">
+                📚 Foundational Facts Needed
+              </span>
+            </div>
+            <div className="flex flex-wrap gap-1 mt-2">
+              {game.foundationalFactsUsed?.map((fact, idx) => (
+                <Badge key={idx} variant="secondary" className="text-xs bg-blue-100 text-blue-800">
+                  {fact}
+                </Badge>
+              ))}
+            </div>
           </div>
         </div>
       </CardContent>
