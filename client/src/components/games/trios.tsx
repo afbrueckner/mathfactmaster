@@ -368,8 +368,12 @@ export function Trios({ onComplete, onExit }: TriosProps) {
               let cellContent: string | number = cell.number;
               
               if (cell.isPartOfTrio) {
-                // Completed trio - gold/yellow color
-                cellStyle = "bg-yellow-400 text-gray-900 border-yellow-600 font-bold shadow-lg";
+                // Completed trio - light blue for Player 1, light red for Player 2
+                if (cell.player === 1) {
+                  cellStyle = "bg-blue-300 text-blue-900 border-blue-500 font-bold shadow-lg";
+                } else {
+                  cellStyle = "bg-red-300 text-red-900 border-red-500 font-bold shadow-lg";
+                }
                 cellContent = "★";
               } else if (cell.player === 1) {
                 // Player 1 claimed - blue
