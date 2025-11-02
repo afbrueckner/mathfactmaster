@@ -15,10 +15,10 @@ import type {
 const STORAGE_KEYS = {
   STUDENT: 'math-fluency-student',
   PROGRESS: 'math-fluency-progress',
-  POINTS: 'math-fluency-points',
-  REWARDS: 'math-fluency-rewards',
-  AVATAR: 'math-fluency-avatar',
-  TRANSACTIONS: 'math-fluency-transactions',
+  // POINTS: 'math-fluency-points', // Removed - no longer using rewards system
+  // REWARDS: 'math-fluency-rewards', // Removed - no longer using rewards system
+  // AVATAR: 'math-fluency-avatar', // Removed - no longer using avatar customization
+  // TRANSACTIONS: 'math-fluency-transactions', // Removed - no longer using rewards system
   OBSERVATIONS: 'math-fluency-observations',
   STUDENTS_LIST: 'math-fluency-students-list',
   CURRENT_STUDENT: 'math-fluency-current-student'
@@ -147,6 +147,11 @@ export function updateProgress(categoryId: string, updates: Partial<StudentProgr
   setProgress(progress);
 }
 
+// REMOVED: Points, Rewards, Avatar, and Transactions functions
+// These features were removed to simplify the app and focus on strategy practice
+// If you need to restore these features, uncomment the code below
+
+/*
 // Points data (scoped to current user)
 export function getPoints(): StudentPoints | null {
   const currentId = getCurrentStudentId();
@@ -291,6 +296,7 @@ export function setAvatar(avatar: StudentAvatar): void {
   const key = getScopedKey(STORAGE_KEYS.AVATAR, currentId);
   setInStorage(key, avatar);
 }
+*/
 
 // Observations (scoped to current user)
 export function getObservations(): any[] {
@@ -311,110 +317,8 @@ export function addObservation(observation: any): void {
   setInStorage(key, observations);
 }
 
+// REMOVED: Reward items - no longer using rewards system
 // Static data (these don't change, so we can define them here)
-export function getRewardItems(): RewardItem[] {
-  return [
-    {
-      id: "background-space-1",
-      name: "Space Station",
-      category: "background",
-      type: "space",
-      description: "Explore the cosmos with this stellar background!",
-      icon: null,
-      unlockCondition: { type: "points", value: 50 },
-      rarity: "common",
-      createdAt: new Date()
-    },
-    {
-      id: "background-ocean-1",
-      name: "Ocean Paradise",
-      category: "background",
-      type: "ocean",
-      description: "Dive into learning with ocean waves!",
-      icon: null,
-      unlockCondition: { type: "points", value: 50 },
-      rarity: "common",
-      createdAt: new Date()
-    },
-    {
-      id: "background-forest-1",
-      name: "Forest Adventure",
-      category: "background",
-      type: "forest",
-      description: "Nature-inspired learning environment!",
-      icon: null,
-      unlockCondition: { type: "points", value: 50 },
-      rarity: "common",
-      createdAt: new Date()
-    },
-    {
-      id: "expression-excited-1",
-      name: "Super Excited",
-      category: "expression",
-      type: "excited",
-      description: "Show your enthusiasm for math!",
-      icon: null,
-      unlockCondition: { type: "points", value: 25 },
-      rarity: "common",
-      createdAt: new Date()
-    },
-    {
-      id: "expression-happy-1",
-      name: "Happy Face",
-      category: "expression",
-      type: "happy",
-      description: "Spread positive math vibes!",
-      icon: null,
-      unlockCondition: { type: "points", value: 25 },
-      rarity: "common",
-      createdAt: new Date()
-    },
-    {
-      id: "expression-cool-1",
-      name: "Cool & Confident",
-      category: "expression",
-      type: "cool",
-      description: "Math is cool, and so are you!",
-      icon: null,
-      unlockCondition: { type: "points", value: 25 },
-      rarity: "common",
-      createdAt: new Date()
-    },
-    {
-      id: "accessory-hat-1",
-      name: "Math Wizard Hat",
-      category: "accessory",
-      type: "hat",
-      description: "Channel your inner math wizard!",
-      icon: null,
-      unlockCondition: { type: "points", value: 75 },
-      rarity: "rare",
-      createdAt: new Date()
-    },
-    {
-      id: "accessory-glasses-1",
-      name: "Smart Glasses",
-      category: "accessory",
-      type: "glasses",
-      description: "Look smart while solving problems!",
-      icon: null,
-      unlockCondition: { type: "points", value: 40 },
-      rarity: "common",
-      createdAt: new Date()
-    },
-    {
-      id: "accessory-bow-1",
-      name: "Victory Bow",
-      category: "accessory",
-      type: "bow",
-      description: "Celebrate your math achievements!",
-      icon: null,
-      unlockCondition: { type: "points", value: 60 },
-      rarity: "rare",
-      createdAt: new Date()
-    }
-  ];
-}
 
 export function getFactCategories(): FactCategory[] {
   return [
