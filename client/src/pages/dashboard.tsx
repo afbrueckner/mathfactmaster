@@ -1,16 +1,11 @@
-import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useLocation } from "wouter";
 import { Header } from "@/components/header";
 import { Navigation } from "@/components/navigation";
 import { ProgressOverview } from "@/components/progress-overview";
 import { DerivedStrategies } from "@/components/derived-strategies";
-import { GameCard } from "@/components/game-card";
-import { Student, StudentProgress, FactCategory, Game } from "@shared/schema";
+import { StudentProgress, FactCategory } from "@shared/schema";
 
 export default function Dashboard() {
-  const [, setLocation] = useLocation();
-
   const { data: progress = [] } = useQuery<StudentProgress[]>({
     queryKey: ["/api/students/student-1/progress"],
   });
@@ -18,17 +13,6 @@ export default function Dashboard() {
   const { data: factCategories = [] } = useQuery<FactCategory[]>({
     queryKey: ["/api/fact-categories"],
   });
-
-  const { data: games = [] } = useQuery<Game[]>({
-    queryKey: ["/api/games"],
-  });
-
-  const handlePlayGame = (gameId: string) => {
-    setLocation('/games');
-  };
-
-  // Featured games for dashboard
-  const featuredGames = games.slice(0, 6);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -40,26 +24,6 @@ export default function Dashboard() {
         
         <DerivedStrategies progress={progress} factCategories={factCategories} />
         
-        {/* Featured Games Section */}
-        <section className="mb-8">
-          <div className="bg-white rounded-xl shadow-sm p-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6 font-serif">Strategy Practice Games</h2>
-            <p className="text-gray-600 mb-6">
-              Build fluency through sustained practice with derived fact strategies
-            </p>
-            
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {featuredGames.map((game) => (
-                <GameCard 
-                  key={game.id} 
-                  game={game} 
-                  onPlay={handlePlayGame} 
-                />
-              ))}
-            </div>
-          </div>
-        </section>
-
         {/* Bay-Williams & Kling Framework */}
         <section className="mb-8">
           <div className="bg-white rounded-xl shadow-sm p-6">
