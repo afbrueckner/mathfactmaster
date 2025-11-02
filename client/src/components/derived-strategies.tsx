@@ -48,7 +48,7 @@ export function DerivedStrategies({ progress, factCategories }: DerivedStrategie
     setLocation("/games");
   };
 
-  const strategySuggestions = [
+  const additionSubtractionStrategies = [
     {
       title: "Doubles Strategy",
       description: "Use known doubles to solve near doubles",
@@ -72,6 +72,51 @@ export function DerivedStrategies({ progress, factCategories }: DerivedStrategie
       description: "Split numbers into tens and ones",
       example: "34 + 28 = 30 + 20 + 4 + 8 = 50 + 12 = 62",
       color: "bg-orange-50 border-orange-200"
+    },
+    {
+      title: "Adding/Subtracting 9",
+      description: "Add or subtract 10, then adjust by 1",
+      example: "9 + 7 = 10 + 7 - 1 = 17 - 1 = 16",
+      color: "bg-pink-50 border-pink-200"
+    },
+    {
+      title: "Building Up Through 10",
+      description: "Bridge through friendly benchmark numbers",
+      example: "7 + 6 = 7 + 3 + 3 = 10 + 3 = 13",
+      color: "bg-indigo-50 border-indigo-200"
+    },
+    {
+      title: "Fact Families",
+      description: "Use relationships between addition and subtraction",
+      example: "8 + 7 = 15, so 15 - 7 = 8",
+      color: "bg-cyan-50 border-cyan-200"
+    }
+  ];
+
+  const multiplicationDivisionStrategies = [
+    {
+      title: "Doubling & Halving",
+      description: "Use doubles to build ×2, ×4, and ×8 facts",
+      example: "6 × 4 = 6 × 2 × 2 = 12 × 2 = 24",
+      color: "bg-teal-50 border-teal-200"
+    },
+    {
+      title: "Fives Facts",
+      description: "Skip count by 5s or use half of tens",
+      example: "7 × 5 = half of 7 × 10 = half of 70 = 35",
+      color: "bg-emerald-50 border-emerald-200"
+    },
+    {
+      title: "Nines Trick",
+      description: "Multiply by 10, then subtract one group",
+      example: "6 × 9 = 6 × 10 - 6 = 60 - 6 = 54",
+      color: "bg-violet-50 border-violet-200"
+    },
+    {
+      title: "Near Squares",
+      description: "Use known squares to solve nearby facts",
+      example: "5 × 6 = 5 × 5 + 5 = 25 + 5 = 30",
+      color: "bg-fuchsia-50 border-fuchsia-200"
     }
   ];
 
@@ -119,30 +164,68 @@ export function DerivedStrategies({ progress, factCategories }: DerivedStrategie
             })}
           </div>
 
-          {/* Strategy Cards */}
-          <div className="grid md:grid-cols-2 gap-6">
-            {strategySuggestions.map((strategy, index) => (
-              <div 
-                key={index}
-                className={`${strategy.color} rounded-lg p-5 border-2`}
-              >
-                <h4 className="font-semibold text-gray-800 mb-2">{strategy.title}</h4>
-                <p className="text-sm text-gray-700 mb-3">{strategy.description}</p>
-                <div className="bg-white/80 rounded p-3 mb-3">
-                  <p className="text-sm font-mono text-gray-800">Example: {strategy.example}</p>
-                </div>
-                <Button 
-                  size="sm" 
-                  variant="outline" 
-                  className="text-xs relative z-10"
-                  onClick={() => handlePracticeStrategy(strategy.title)}
-                  data-testid={`button-practice-${strategy.title.toLowerCase().replace(/\s+/g, '-')}`}
-                  style={{ pointerEvents: 'auto' }}
+          {/* Addition & Subtraction Strategies */}
+          <div className="mb-8">
+            <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
+              <span className="text-2xl mr-2">➕➖</span>
+              Addition & Subtraction Strategies
+            </h3>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {additionSubtractionStrategies.map((strategy, index) => (
+                <div 
+                  key={index}
+                  className={`${strategy.color} rounded-lg p-4 border-2`}
                 >
-                  Practice This Strategy
-                </Button>
-              </div>
-            ))}
+                  <h4 className="font-semibold text-gray-800 mb-2 text-sm">{strategy.title}</h4>
+                  <p className="text-xs text-gray-700 mb-2">{strategy.description}</p>
+                  <div className="bg-white/80 rounded p-2 mb-3">
+                    <p className="text-xs font-mono text-gray-800">{strategy.example}</p>
+                  </div>
+                  <Button 
+                    size="sm" 
+                    variant="outline" 
+                    className="text-xs w-full relative z-10"
+                    onClick={() => handlePracticeStrategy(strategy.title)}
+                    data-testid={`button-practice-${strategy.title.toLowerCase().replace(/\s+/g, '-')}`}
+                    style={{ pointerEvents: 'auto' }}
+                  >
+                    Practice
+                  </Button>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Multiplication & Division Strategies */}
+          <div className="mb-6">
+            <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
+              <span className="text-2xl mr-2">✖️➗</span>
+              Multiplication & Division Strategies
+            </h3>
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+              {multiplicationDivisionStrategies.map((strategy, index) => (
+                <div 
+                  key={index}
+                  className={`${strategy.color} rounded-lg p-4 border-2`}
+                >
+                  <h4 className="font-semibold text-gray-800 mb-2 text-sm">{strategy.title}</h4>
+                  <p className="text-xs text-gray-700 mb-2">{strategy.description}</p>
+                  <div className="bg-white/80 rounded p-2 mb-3">
+                    <p className="text-xs font-mono text-gray-800">{strategy.example}</p>
+                  </div>
+                  <Button 
+                    size="sm" 
+                    variant="outline" 
+                    className="text-xs w-full relative z-10"
+                    onClick={() => handlePracticeStrategy(strategy.title)}
+                    data-testid={`button-practice-${strategy.title.toLowerCase().replace(/\s+/g, '-')}`}
+                    style={{ pointerEvents: 'auto' }}
+                  >
+                    Practice
+                  </Button>
+                </div>
+              ))}
+            </div>
           </div>
 
           {/* Bay-Williams Teaching Note */}
