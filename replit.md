@@ -64,6 +64,7 @@ Preferred communication style: Simple, everyday language.
   - Avatar customization (removed)
   - Foundational facts practice section (removed)
   - Quick Looks tool (removed)
+  - Strategy Practice Games removed from dashboard (November 2025) - accessible via Strategy Games navigation link
 - **Strategy-Focused Games**: All 7 games now display which strategies they practice and which foundational facts are needed
 - **Enhanced Game Metadata**: Each game card shows "Strategies Practiced" (e.g., Make 10, Doubles, Near Doubles) and "Foundational Facts Needed" (e.g., Addition Facts to 10, Combinations to 10)
 - **Progress Tracking Simplified**: Focus on three key metrics in order of priority:
@@ -73,6 +74,38 @@ Preferred communication style: Simple, everyday language.
 - **Teacher Dashboard Retained**: Admin panel still available at `/admin` for teachers to monitor student progress
 - **Learning Path Kept**: Personalized recommendations focused on which strategies need more practice
 - **Clear Attribution**: Dashboard and games pages clarify this is inspired by Bay-Williams framework, not an official product
+
+### Two-Player Competitive Games (November 2025)
+- **Lucky 13**: Transformed into 2-player competitive game with turn-based play
+  - Blue for Player 1, red for Player 2 color coding
+  - Side-by-side scoring tables showing number sentences and scores
+  - Players alternate turns to build number sentences equaling 13
+- **Trios**: Competitive 2-player game with overlapping trio system
+  - Players claim squares on 5×5 board by answering multiplication facts correctly
+  - Star squares (completed trios) can be reused in multiple combinations
+  - Each unique trio (3-in-a-row horizontally, vertically, or diagonally) counts as 1 point
+  - Light blue stars for Player 1 trios, light red stars for Player 2 trios
+  - Examples: 4 squares in a row = 2 trios, L-shape with shared corner = 2 trios
+  - Game continues until deck is exhausted, winner has most trios
+  - Encourages strategic placement and pattern recognition
+
+### Comprehensive Derived Strategies Dashboard (November 2025)
+- **Addition & Subtraction Strategies (7 total)**:
+  1. Doubles Strategy - Use known doubles to solve near doubles
+  2. Making Ten - Decompose numbers to make friendly tens
+  3. Compensation - Add a friendly number, then adjust
+  4. Break Apart - Split numbers into tens and ones
+  5. Adding/Subtracting 9 - Add or subtract 10, then adjust by 1
+  6. Building Up Through 10 - Bridge through friendly benchmark numbers
+  7. Fact Families - Use relationships between addition and subtraction
+- **Multiplication & Division Strategies (4 total)**:
+  1. Doubling & Halving - Use doubles to build ×2, ×4, and ×8 facts
+  2. Fives Facts - Skip count by 5s or use half of tens
+  3. Nines Trick - Multiply by 10, then subtract one group
+  4. Near Squares - Use known squares to solve nearby facts
+- **Organized by Fact Type**: Clear visual separation with icons (➕➖ and ✖️➗)
+- **Teaching Resource**: Each strategy includes description and example aligned with Bay-Williams framework
+- **Practice Integration**: "Practice" buttons on each strategy card navigate to games page
 
 ### Previous Enhancements (August 2025)
 - **Comprehensive Assessment System**: Renamed from "Self Assessment" to "Assessment" to reflect full scope including teacher observations, phase assessments, strategy interviews, and student self-assessments
