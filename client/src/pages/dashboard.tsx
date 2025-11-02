@@ -1,14 +1,15 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useLocation } from "wouter";
 import { Header } from "@/components/header";
 import { Navigation } from "@/components/navigation";
 import { ProgressOverview } from "@/components/progress-overview";
-import { FoundationalFacts } from "@/components/foundational-facts";
 import { DerivedStrategies } from "@/components/derived-strategies";
 import { GameCard } from "@/components/game-card";
 import { Student, StudentProgress, FactCategory, Game } from "@shared/schema";
 
 export default function Dashboard() {
+  const [, setLocation] = useLocation();
 
   const { data: progress = [] } = useQuery<StudentProgress[]>({
     queryKey: ["/api/students/student-1/progress"],
@@ -23,8 +24,7 @@ export default function Dashboard() {
   });
 
   const handlePlayGame = (gameId: string) => {
-    // In a real implementation, this would navigate to the game
-    console.log("Playing game:", gameId);
+    setLocation('/games');
   };
 
   // Featured games for dashboard
@@ -38,14 +38,15 @@ export default function Dashboard() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <ProgressOverview progress={progress} factCategories={factCategories} />
         
-        <FoundationalFacts progress={progress} factCategories={factCategories} />
-        
         <DerivedStrategies progress={progress} factCategories={factCategories} />
         
         {/* Featured Games Section */}
         <section className="mb-8">
           <div className="bg-white rounded-xl shadow-sm p-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6 font-serif">Featured Math Fact Games</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-6 font-serif">Strategy Practice Games</h2>
+            <p className="text-gray-600 mb-6">
+              Build fluency through sustained practice with derived fact strategies
+            </p>
             
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {featuredGames.map((game) => (
@@ -62,60 +63,66 @@ export default function Dashboard() {
         {/* Bay-Williams & Kling Framework */}
         <section className="mb-8">
           <div className="bg-white rounded-xl shadow-sm p-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6 font-serif">Bay-Williams & Kling Framework</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4 font-serif">Based on Bay-Williams & Kling Framework</h2>
+            <p className="text-sm text-gray-600 mb-6">
+              This application is inspired by research from Bay-Williams & Kling's Math Fact Fluency framework. 
+              It is not an official product of their research.
+            </p>
             
-            <div className="grid md:grid-cols-5 gap-4 mb-6">
-              <div className="bg-primary-50 rounded-lg p-4 text-center border-2 border-primary-200">
-                <div className="w-12 h-12 bg-primary-500 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <span className="text-white font-bold">1</span>
-                </div>
-                <h3 className="font-semibold text-primary-800 text-sm mb-2">Focus on Fluency</h3>
-                <p className="text-xs text-primary-700">Accuracy, efficiency, flexibility, and appropriate strategies</p>
-              </div>
-              
-              <div className="bg-secondary-50 rounded-lg p-4 text-center border-2 border-secondary-200">
-                <div className="w-12 h-12 bg-secondary-500 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <span className="text-white font-bold">2</span>
-                </div>
-                <h3 className="font-semibold text-secondary-800 text-sm mb-2">Three Phases</h3>
-                <p className="text-xs text-secondary-700">Counting → Deriving → Mastery progression</p>
-              </div>
-              
+            <div className="grid md:grid-cols-3 gap-4 mb-6">
               <div className="bg-purple-50 rounded-lg p-4 text-center border-2 border-purple-200">
                 <div className="w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <span className="text-white font-bold">3</span>
+                  <span className="text-white font-bold text-2xl">🧠</span>
                 </div>
-                <h3 className="font-semibold text-purple-800 text-sm mb-2">Foundational First</h3>
-                <p className="text-xs text-purple-700">Master foundational facts before derived strategies</p>
+                <h3 className="font-semibold text-purple-800 text-sm mb-2">Strategy Focus</h3>
+                <p className="text-xs text-purple-700">Practice derived strategies through sustained, meaningful engagement</p>
               </div>
               
-              <div className="bg-red-50 rounded-lg p-4 text-center border-2 border-red-200">
-                <div className="w-12 h-12 bg-red-500 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <span className="text-white font-bold">4</span>
+              <div className="bg-blue-50 rounded-lg p-4 text-center border-2 border-blue-200">
+                <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <span className="text-white font-bold text-2xl">📊</span>
                 </div>
-                <h3 className="font-semibold text-red-800 text-sm mb-2">No Timed Tests</h3>
-                <p className="text-xs text-red-700">Timed tests don't assess true fluency components</p>
+                <h3 className="font-semibold text-blue-800 text-sm mb-2">Track Progress</h3>
+                <p className="text-xs text-blue-700">Monitor accuracy over time, strategies used, and session frequency</p>
               </div>
               
-              <div className="bg-orange-50 rounded-lg p-4 text-center border-2 border-orange-200">
-                <div className="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <span className="text-white font-bold">5</span>
+              <div className="bg-green-50 rounded-lg p-4 text-center border-2 border-green-200">
+                <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <span className="text-white font-bold text-2xl">🎮</span>
                 </div>
-                <h3 className="font-semibold text-orange-800 text-sm mb-2">Enjoyable Practice</h3>
-                <p className="text-xs text-orange-700">Substantial practice through engaging games</p>
+                <h3 className="font-semibold text-green-800 text-sm mb-2">Enjoyable Practice</h3>
+                <p className="text-xs text-green-700">Games over drills - build fluency through engaging activities</p>
               </div>
             </div>
             
-            {/* No Timed Tests Message */}
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+            {/* Attribution */}
+            <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
               <div className="flex items-start space-x-3">
-                <i className="fas fa-ban text-red-500 mt-1"></i>
+                <span className="text-2xl">📚</span>
                 <div>
-                  <h4 className="font-medium text-red-800">Research-Based Approach: No Timed Tests</h4>
-                  <p className="text-sm text-red-700 mt-1">
-                    Following NCTM guidelines, we focus on understanding and flexible thinking rather than speed. 
-                    Timed tests can create math anxiety and don't assess true fluency components like flexibility and appropriate strategy use.
+                  <h4 className="font-medium text-gray-800">Learn More About the Framework</h4>
+                  <p className="text-sm text-gray-700 mt-1 mb-3">
+                    This app draws inspiration from Bay-Williams & Kling's research on math fact fluency. 
+                    Visit their official resources to learn more about the framework.
                   </p>
+                  <div className="flex flex-wrap gap-3">
+                    <a 
+                      href="https://kcm.nku.edu/mathfactfluency/index.php" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:text-blue-700 text-sm flex items-center space-x-1"
+                    >
+                      <span>Official Research Site →</span>
+                    </a>
+                    <a 
+                      href="https://www.ascd.org/books/math-fact-fluency" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:text-blue-700 text-sm flex items-center space-x-1"
+                    >
+                      <span>Math Fact Fluency Book →</span>
+                    </a>
+                  </div>
                 </div>
               </div>
             </div>
