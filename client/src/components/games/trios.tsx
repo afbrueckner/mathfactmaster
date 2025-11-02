@@ -8,7 +8,6 @@ interface TriosBoardCell {
   number: number;
   covered: boolean;
   player: 1 | 2 | null; // Which player claimed this square
-  isPartOfTrio: boolean; // Is this square part of a completed trio
 }
 
 interface TriosProps {
@@ -20,6 +19,8 @@ export function Trios({ onComplete, onExit }: TriosProps) {
   const [currentPlayer, setCurrentPlayer] = useState<1 | 2>(1);
   const [player1Trios, setPlayer1Trios] = useState(0);
   const [player2Trios, setPlayer2Trios] = useState(0);
+  const [player1ClaimedTrios, setPlayer1ClaimedTrios] = useState<string[]>([]);
+  const [player2ClaimedTrios, setPlayer2ClaimedTrios] = useState<string[]>([]);
   const [currentCard, setCurrentCard] = useState<number | null>(null);
   const [cardDeck, setCardDeck] = useState<number[]>([]);
   const [deckPosition, setDeckPosition] = useState(0);
@@ -45,8 +46,7 @@ export function Trios({ onComplete, onExit }: TriosProps) {
     const board = boardNumbers.map(number => ({
       number,
       covered: false,
-      player: null,
-      isPartOfTrio: false
+      player: null
     }));
     
     setTriosBoard(board);
@@ -76,17 +76,19 @@ export function Trios({ onComplete, onExit }: TriosProps) {
     setGameStarted(true);
   };
 
-  const checkForThreeInARow = (board: TriosBoardCell[], player: 1 | 2): { found: boolean; indices: number[] } => {
+  const findAllTrios = (board: TriosBoardCell[], player: 1 | 2): number[][] => {
+    const allTrios: number[][] = [];
+    
     // Check rows
     for (let row = 0; row < 5; row++) {
       for (let col = 0; col <= 2; col++) {
         const idx1 = row * 5 + col;
         const idx2 = row * 5 + col + 1;
         const idx3 = row * 5 + col + 2;
-        if (board[idx1].player === player && !board[idx1].isPartOfTrio &&
-            board[idx2].player === player && !board[idx2].isPartOfTrio &&
-            board[idx3].player === player && !board[idx3].isPartOfTrio) {
-          return { found: true, indices: [idx1, idx2, idx3] };
+        if (board[idx1].player === player &&
+            board[idx2].player === player &&
+            board[idx3].player === player) {
+          allTrios.push([idx1, idx2, idx3].sort((a, b) => a - b));
         }
       }
     }
@@ -97,10 +99,10 @@ export function Trios({ onComplete, onExit }: TriosProps) {
         const idx1 = row * 5 + col;
         const idx2 = (row + 1) * 5 + col;
         const idx3 = (row + 2) * 5 + col;
-        if (board[idx1].player === player && !board[idx1].isPartOfTrio &&
-            board[idx2].player === player && !board[idx2].isPartOfTrio &&
-            board[idx3].player === player && !board[idx3].isPartOfTrio) {
-          return { found: true, indices: [idx1, idx2, idx3] };
+        if (board[idx1].player === player &&
+            board[idx2].player === player &&
+            board[idx3].player === player) {
+          allTrios.push([idx1, idx2, idx3].sort((a, b) => a - b));
         }
       }
     }
@@ -111,10 +113,10 @@ export function Trios({ onComplete, onExit }: TriosProps) {
         const idx1 = row * 5 + col;
         const idx2 = (row + 1) * 5 + col + 1;
         const idx3 = (row + 2) * 5 + col + 2;
-        if (board[idx1].player === player && !board[idx1].isPartOfTrio &&
-            board[idx2].player === player && !board[idx2].isPartOfTrio &&
-            board[idx3].player === player && !board[idx3].isPartOfTrio) {
-          return { found: true, indices: [idx1, idx2, idx3] };
+        if (board[idx1].player === player &&
+            board[idx2].player === player &&
+            board[idx3].player === player) {
+          allTrios.push([idx1, idx2, idx3].sort((a, b) => a - b));
         }
       }
     }
@@ -125,15 +127,19 @@ export function Trios({ onComplete, onExit }: TriosProps) {
         const idx1 = row * 5 + col;
         const idx2 = (row + 1) * 5 + col - 1;
         const idx3 = (row + 2) * 5 + col - 2;
-        if (board[idx1].player === player && !board[idx1].isPartOfTrio &&
-            board[idx2].player === player && !board[idx2].isPartOfTrio &&
-            board[idx3].player === player && !board[idx3].isPartOfTrio) {
-          return { found: true, indices: [idx1, idx2, idx3] };
+        if (board[idx1].player === player &&
+            board[idx2].player === player &&
+            board[idx3].player === player) {
+          allTrios.push([idx1, idx2, idx3].sort((a, b) => a - b));
         }
       }
     }
     
-    return { found: false, indices: [] };
+    return allTrios;
+  };
+  
+  const getTrioKey = (indices: number[]): string => {
+    return indices.sort((a, b) => a - b).join('-');
   };
 
   const drawNextCard = () => {
@@ -165,28 +171,34 @@ export function Trios({ onComplete, onExit }: TriosProps) {
       newBoard[index].covered = true;
       newBoard[index].player = currentPlayer;
       
-      const playerColor = currentPlayer === 1 ? 'blue' : 'red';
       setFeedback(`✓ Player ${currentPlayer} correct! ${currentCard} × ${selectedMultiple} = ${targetProduct}`);
       
       const strategyName = `counting by ${selectedMultiple}s (×${selectedMultiple})`;
       setStrategiesUsed([...strategiesUsed, strategyName]);
       
-      // Check for three in a row for current player
-      const trioResult = checkForThreeInARow(newBoard, currentPlayer);
-      if (trioResult.found) {
-        // Mark the trio squares
-        trioResult.indices.forEach(idx => {
-          newBoard[idx].isPartOfTrio = true;
-        });
-        
-        // Increment player's trio count
+      // Find all trios for current player
+      const allTrios = findAllTrios(newBoard, currentPlayer);
+      const currentClaimed = currentPlayer === 1 ? player1ClaimedTrios : player2ClaimedTrios;
+      
+      // Filter for new trios not yet claimed
+      const newTrios = allTrios.filter(trio => {
+        const key = getTrioKey(trio);
+        return !currentClaimed.includes(key);
+      });
+      
+      if (newTrios.length > 0) {
+        // Add new trios to claimed list
+        const newKeys = newTrios.map(getTrioKey);
         if (currentPlayer === 1) {
-          setPlayer1Trios(player1Trios + 1);
+          setPlayer1ClaimedTrios([...player1ClaimedTrios, ...newKeys]);
+          setPlayer1Trios(player1Trios + newTrios.length);
         } else {
-          setPlayer2Trios(player2Trios + 1);
+          setPlayer2ClaimedTrios([...player2ClaimedTrios, ...newKeys]);
+          setPlayer2Trios(player2Trios + newTrios.length);
         }
         
-        setFeedback(`🎉 Player ${currentPlayer} got a TRIO! +1 point`);
+        const trioText = newTrios.length === 1 ? 'TRIO' : `${newTrios.length} TRIOS`;
+        setFeedback(`🎉 Player ${currentPlayer} got ${trioText}! +${newTrios.length} point${newTrios.length > 1 ? 's' : ''}`);
       }
       
       setTriosBoard(newBoard);
@@ -367,20 +379,28 @@ export function Trios({ onComplete, onExit }: TriosProps) {
               let cellStyle = "";
               let cellContent: string | number = cell.number;
               
-              if (cell.isPartOfTrio) {
-                // Completed trio - light blue for Player 1, light red for Player 2
-                if (cell.player === 1) {
-                  cellStyle = "bg-blue-300 text-blue-900 border-blue-500 font-bold shadow-lg";
-                } else {
-                  cellStyle = "bg-red-300 text-red-900 border-red-500 font-bold shadow-lg";
-                }
+              // Check if this cell is part of any claimed trio
+              const isPartOfPlayer1Trio = player1ClaimedTrios.some(trioKey => 
+                trioKey.split('-').map(Number).includes(index)
+              );
+              const isPartOfPlayer2Trio = player2ClaimedTrios.some(trioKey => 
+                trioKey.split('-').map(Number).includes(index)
+              );
+              
+              if (isPartOfPlayer1Trio && cell.player === 1) {
+                // Player 1 trio square - light blue with star
+                cellStyle = "bg-blue-300 text-blue-900 border-blue-500 font-bold shadow-lg";
+                cellContent = "★";
+              } else if (isPartOfPlayer2Trio && cell.player === 2) {
+                // Player 2 trio square - light red with star
+                cellStyle = "bg-red-300 text-red-900 border-red-500 font-bold shadow-lg";
                 cellContent = "★";
               } else if (cell.player === 1) {
-                // Player 1 claimed - blue
+                // Player 1 claimed but not part of trio - blue
                 cellStyle = "bg-blue-500 text-white border-blue-600";
                 cellContent = "✓";
               } else if (cell.player === 2) {
-                // Player 2 claimed - red
+                // Player 2 claimed but not part of trio - red
                 cellStyle = "bg-red-500 text-white border-red-600";
                 cellContent = "✓";
               } else {
