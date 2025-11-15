@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ArrowLeft, Target, Trophy, Calculator } from "lucide-react";
 
 interface LuckyThirteenProps {
@@ -39,6 +40,8 @@ interface GameState {
 }
 
 export function LuckyThirteen({ onComplete, onExit }: LuckyThirteenProps) {
+  const [targetNumber, setTargetNumber] = useState(13);
+  const [gameStarted, setGameStarted] = useState(false);
   const [gameState, setGameState] = useState<GameState>({
     currentRound: 1,
     currentPlayer: 1,
@@ -71,9 +74,10 @@ export function LuckyThirteen({ onComplete, onExit }: LuckyThirteenProps) {
     }));
   };
 
-  useEffect(() => {
+  const initializeGame = () => {
+    setGameStarted(true);
     dealCards();
-  }, []);
+  };
 
   const handleCardClick = (clickedCard: GameCard) => {
     if (gameState.selectedCards.length === 2 && !clickedCard.selected) {
@@ -103,7 +107,7 @@ export function LuckyThirteen({ onComplete, onExit }: LuckyThirteenProps) {
     const card1 = gameState.selectedCards[0];
     const card2 = gameState.selectedCards[1];
     const sum = card1.value + card2.value;
-    const difference = Math.abs(13 - sum);
+    const difference = Math.abs(targetNumber - sum);
     const score = difference; // Lower is better
 
     const roundResult: RoundResult = {
@@ -179,6 +183,75 @@ export function LuckyThirteen({ onComplete, onExit }: LuckyThirteenProps) {
     }
   };
 
+  if (!gameStarted) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-green-100 to-blue-100 dark:from-green-900 dark:to-blue-900 p-4">
+        <div className="max-w-2xl mx-auto">
+          <div className="flex items-center justify-between mb-6">
+            <Button variant="ghost" onClick={onExit} className="flex items-center gap-2" data-testid="exit-game">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Games
+            </Button>
+          </div>
+
+          <Card className="bg-white dark:bg-gray-800 shadow-xl">
+            <CardHeader className="text-center">
+              <CardTitle className="text-3xl flex items-center justify-center gap-2">
+                <Target className="w-8 h-8 text-blue-500" />
+                Lucky {targetNumber}
+              </CardTitle>
+              <p className="text-gray-600 dark:text-gray-300 mt-2">
+                A two-player number combination game
+              </p>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="space-y-4">
+                <div>
+                  <h3 className="font-semibold mb-2">How to Play:</h3>
+                  <ul className="list-disc list-inside space-y-1 text-gray-700 dark:text-gray-300">
+                    <li>Players take turns selecting 2 cards from 4 random cards (0-10)</li>
+                    <li>Try to make a sum as close to the target number as possible</li>
+                    <li>Score = difference from target (lower is better!)</li>
+                    <li>Play 5 rounds each. Lowest total score wins!</li>
+                  </ul>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="font-semibold block">Select Target Number:</label>
+                  <Select
+                    value={targetNumber.toString()}
+                    onValueChange={(value) => setTargetNumber(parseInt(value))}
+                  >
+                    <SelectTrigger className="w-full" data-testid="target-selector">
+                      <SelectValue placeholder="Select target number" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="10">10</SelectItem>
+                      <SelectItem value="11">11</SelectItem>
+                      <SelectItem value="12">12</SelectItem>
+                      <SelectItem value="13">13 (Classic)</SelectItem>
+                      <SelectItem value="14">14</SelectItem>
+                      <SelectItem value="15">15</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <Button
+                  onClick={initializeGame}
+                  size="lg"
+                  className="w-full"
+                  data-testid="start-game"
+                >
+                  Start Game
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
   if (gameState.gameComplete) {
     const winner = gameState.player1Score < gameState.player2Score ? 1 : 
                    gameState.player2Score < gameState.player1Score ? 2 : 0; // 0 = tie
@@ -197,7 +270,7 @@ export function LuckyThirteen({ onComplete, onExit }: LuckyThirteenProps) {
             <CardHeader className="text-center">
               <CardTitle className="text-3xl flex items-center justify-center gap-2">
                 <Trophy className="w-8 h-8 text-yellow-500" />
-                Lucky 13 Complete!
+                Lucky {targetNumber} Complete!
               </CardTitle>
               {winner > 0 && (
                 <p className="text-2xl font-bold mt-4" data-testid="winner-announcement">
@@ -269,10 +342,10 @@ export function LuckyThirteen({ onComplete, onExit }: LuckyThirteenProps) {
           <CardHeader className="text-center">
             <CardTitle className="text-3xl flex items-center justify-center gap-2">
               <Target className="w-8 h-8 text-blue-500" />
-              Lucky 13
+              Lucky {targetNumber}
             </CardTitle>
             <p className="text-gray-600 dark:text-gray-300 mt-2">
-              Pick 2 cards that add up as close to 13 as possible. Lower score wins!
+              Pick 2 cards that add up as close to {targetNumber} as possible. Lower score wins!
             </p>
           </CardHeader>
           <CardContent>
@@ -328,7 +401,7 @@ export function LuckyThirteen({ onComplete, onExit }: LuckyThirteenProps) {
                   return result ? (
                     <div className="space-y-2">
                       <p>Sum: {result.card1} + {result.card2} = {result.sum}</p>
-                      <p>Difference from 13: |13 - {result.sum}| = {result.difference}</p>
+                      <p>Difference from {targetNumber}: |{targetNumber} - {result.sum}| = {result.difference}</p>
                       <p className="text-xl font-bold text-blue-600 dark:text-blue-400">
                         Round Score: {result.score}
                       </p>
