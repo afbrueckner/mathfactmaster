@@ -33,15 +33,27 @@ export function Trios({ onComplete, onExit }: TriosProps) {
 
   const initializeGame = () => {
     // Create 5x5 board with multiples of selected number
-    const maxMultiplier = Math.floor(50 / selectedMultiple); // Keep products under 50
-    const multiples = Array.from({ length: maxMultiplier }, (_, i) => (i + 1) * selectedMultiple);
-    const boardNumbers: number[] = [];
+    // Deck only has cards 1-10, so board should only have 1× through 10× the selected multiple
+    const maxMultiplier = 10;
     
-    // Fill 25 spots with random multiples (allowing duplicates)
-    for (let i = 0; i < 25; i++) {
-      const randomMultiple = multiples[Math.floor(Math.random() * multiples.length)];
-      boardNumbers.push(randomMultiple);
+    // Create a pool with each multiple appearing at most 4 times (matching deck composition)
+    const multiplesPool: number[] = [];
+    for (let multiplier = 1; multiplier <= maxMultiplier; multiplier++) {
+      const product = multiplier * selectedMultiple;
+      // Add each multiple up to 4 times to match the deck
+      for (let copy = 0; copy < 4; copy++) {
+        multiplesPool.push(product);
+      }
     }
+    
+    // Shuffle the pool
+    for (let i = multiplesPool.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [multiplesPool[i], multiplesPool[j]] = [multiplesPool[j], multiplesPool[i]];
+    }
+    
+    // Take first 25 numbers from shuffled pool for the board
+    const boardNumbers = multiplesPool.slice(0, 25);
     
     const board = boardNumbers.map(number => ({
       number,
