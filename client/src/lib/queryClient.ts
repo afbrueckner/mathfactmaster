@@ -33,6 +33,7 @@ const apiRouteMap: Record<string, (params?: any) => Promise<any>> = {
   
   // Game results
   '/api/students/student-1/game-results': () => mockApi.getGameResults('student-1'),
+  '/api/students/default-student/game-results': () => mockApi.getGameResults('default-student'),
 };
 
 export const queryClient = new QueryClient({
@@ -103,8 +104,8 @@ export async function apiRequest(url: string, options: RequestInit = {}) {
     return await mockApi.updateStudentProgress('student-1', categoryId, body);
   }
   
-  // Handle POST requests for game results
-  if (url === '/api/students/student-1/game-results' && method === 'POST') {
+  // Handle POST requests for game results (for any student ID)
+  if (url.includes('/game-results') && method === 'POST') {
     return await mockApi.createGameResult(body);
   }
   
