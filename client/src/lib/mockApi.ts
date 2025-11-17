@@ -124,6 +124,9 @@ export const mockApi = {
     results.unshift(newResult);
     setInStorage('gameResults', results);
     
+    // Automatically sync progress metrics from all game results
+    syncProgressFromGameResults(data.studentId);
+    
     // REMOVED: Points awarding - no longer using reward system
     
     return newResult;
