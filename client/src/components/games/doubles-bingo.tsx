@@ -27,12 +27,17 @@ export function DoublesBingo({ onComplete, onExit }: DoublesBingoProps) {
     // Doubles sums for numbers 1-10: 2, 4, 6, 8, 10, 12, 14, 16, 18, 20
     const possibleSums = [2, 4, 6, 8, 10, 12, 14, 16, 18, 20];
     
-    // Create random bingo board with these sums (duplicates allowed for 4x4 = 16 spaces)
-    const boardNumbers = [];
-    for (let i = 0; i < 16; i++) {
-      const randomSum = possibleSums[Math.floor(Math.random() * possibleSums.length)];
-      boardNumbers.push(randomSum);
-    }
+    // Create a pool where each sum appears at most 4 times (max 40 numbers total)
+    const pool: number[] = [];
+    possibleSums.forEach(sum => {
+      for (let i = 0; i < 4; i++) {
+        pool.push(sum);
+      }
+    });
+    
+    // Shuffle the pool and pick first 16 numbers for the 4x4 board
+    const shuffledPool = [...pool].sort(() => Math.random() - 0.5);
+    const boardNumbers = shuffledPool.slice(0, 16);
     
     const board = boardNumbers.map(num => ({ number: num, covered: false }));
     setBingoBoard(board);
