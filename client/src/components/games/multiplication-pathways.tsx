@@ -19,6 +19,7 @@ export function MultiplicationPathways({ onComplete, onExit }: MultiplicationPat
   const [board, setBoard] = useState<PathwayCell[][]>([]);
   const [factors] = useState([0, 1, 2, 3, 4, 5, 6, 10]);
   const [selectedFactors, setSelectedFactors] = useState<[number | null, number | null]>([null, null]);
+  const [movingClip, setMovingClip] = useState<0 | 1 | null>(null); // Which clip is being moved (0=blue, 1=red)
   const [path, setPath] = useState<{ row: number; col: number }[]>([]);
   const [equations, setEquations] = useState<{ player: 1 | 2; equation: string }[]>([]);
   const [feedback, setFeedback] = useState("");
@@ -52,6 +53,7 @@ export function MultiplicationPathways({ onComplete, onExit }: MultiplicationPat
     setPath([]);
     setEquations([]);
     setSelectedFactors([null, null]);
+    setMovingClip(null);
     setCurrentPlayer(1);
     setFeedback("");
     setGameComplete(false);
@@ -63,11 +65,18 @@ export function MultiplicationPathways({ onComplete, onExit }: MultiplicationPat
     
     const currentColumn = path.length;
     
+    // Phase 1: Initial placement (first column - need to place both clips)
     if (currentColumn === 0) {
       if (selectedFactors[0] === null) {
+        // First clip placement (blue)
         setSelectedFactors([factor, null]);
-        setFeedback(`Player ${currentPlayer}: First factor selected: ${factor}. Select second factor.`);
-      } else if (selectedFactors[1] === null && factor !== selectedFactors[0]) {
+        setFeedback(`Player ${currentPlayer}: Blue clip on ${factor}. Now select where to put the red clip.`);
+      } else if (selectedFactors[1] === null) {
+        if (factor === selectedFactors[0]) {
+          setFeedback("Red clip must be on a different factor. Choose another number.");
+          return;
+        }
+        // Second clip placement (red) - now try to mark a cell
         const factor1 = selectedFactors[0];
         const factor2 = factor;
         const product = factor1 * factor2;
@@ -77,39 +86,73 @@ export function MultiplicationPathways({ onComplete, onExit }: MultiplicationPat
         if (validRow !== -1) {
           markCell(validRow, 0, factor1, factor2);
         } else {
-          setFeedback(`No ${product} available in the first column. Try different factors.`);
+          setFeedback(`No ${product} in column 1. Try different factors.`);
           setSelectedFactors([null, null]);
         }
       }
-    } else {
-      const lastPos = path[path.length - 1];
-      const movingFactor = selectedFactors[0] === factor ? selectedFactors[1] : selectedFactors[0];
-      
-      if (movingFactor === null) {
-        setFeedback("Select which factor to keep on the clip.");
-        return;
+      return;
+    }
+    
+    // Phase 2: Moving clips (after first column)
+    // Step A: If no clip is selected to move, player must first click on a clip to move it
+    if (movingClip === null) {
+      if (factor === selectedFactors[0]) {
+        setMovingClip(0);
+        setFeedback(`Moving blue clip (currently on ${factor}). Click a new factor to move it to.`);
+      } else if (factor === selectedFactors[1]) {
+        setMovingClip(1);
+        setFeedback(`Moving red clip (currently on ${factor}). Click a new factor to move it to.`);
+      } else {
+        setFeedback(`Click on a clip to move it first! Blue is on ${selectedFactors[0]}, Red is on ${selectedFactors[1]}.`);
       }
-      
-      const newProduct = factor * movingFactor!;
-      const nextCol = currentColumn;
-      
-      const adjacentRows = [lastPos.row - 1, lastPos.row, lastPos.row + 1].filter(r => r >= 0 && r < 4);
-      
-      let found = false;
-      for (const row of adjacentRows) {
-        if (board[row] && board[row][nextCol] && 
-            board[row][nextCol].product === newProduct && 
-            !board[row][nextCol].marked) {
-          markCell(row, nextCol, movingFactor!, factor);
-          found = true;
-          break;
-        }
-      }
-      
-      if (!found) {
-        setFeedback(`No adjacent ${newProduct} in column ${nextCol + 1}. Move the other clip or restart.`);
+      return;
+    }
+    
+    // Step B: Player has selected a clip, now they're choosing where to move it
+    const stayingClip = movingClip === 0 ? 1 : 0;
+    const stayingFactor = selectedFactors[stayingClip]!;
+    const oldMovingFactor = selectedFactors[movingClip]!;
+    
+    // Can't move to the same position
+    if (factor === oldMovingFactor) {
+      setFeedback(`Clip is already on ${factor}. Choose a different factor or click the other clip.`);
+      setMovingClip(null);
+      return;
+    }
+    
+    // Can't move to where the other clip is
+    if (factor === stayingFactor) {
+      setFeedback(`The other clip is already there! Choose a different factor.`);
+      setMovingClip(null);
+      return;
+    }
+    
+    const newProduct = factor * stayingFactor;
+    const lastPos = path[path.length - 1];
+    const nextCol = currentColumn;
+    
+    const adjacentRows = [lastPos.row - 1, lastPos.row, lastPos.row + 1].filter(r => r >= 0 && r < 4);
+    
+    let found = false;
+    for (const row of adjacentRows) {
+      if (board[row] && board[row][nextCol] && 
+          board[row][nextCol].product === newProduct && 
+          !board[row][nextCol].marked) {
+        // Update the selected factors with the new position
+        const newFactors: [number, number] = movingClip === 0 
+          ? [factor, stayingFactor] 
+          : [stayingFactor, factor];
+        markCell(row, nextCol, newFactors[0], newFactors[1]);
+        found = true;
+        break;
       }
     }
+    
+    if (!found) {
+      setFeedback(`No adjacent ${newProduct} in column ${nextCol + 1}. Try moving the other clip instead.`);
+    }
+    
+    setMovingClip(null);
   };
 
   const markCell = (row: number, col: number, factor1: number, factor2: number) => {
@@ -148,6 +191,7 @@ export function MultiplicationPathways({ onComplete, onExit }: MultiplicationPat
     setPath([]);
     setEquations([]);
     setSelectedFactors([null, null]);
+    setMovingClip(null);
     setCurrentPlayer(1);
     setFeedback("Board reset. Start fresh from the first column!");
   };
@@ -334,28 +378,48 @@ export function MultiplicationPathways({ onComplete, onExit }: MultiplicationPat
 
             <div className="mt-4 pt-4 border-t">
               <p className="text-sm text-gray-600 dark:text-gray-400 mb-2 text-center">
-                Click factors to place clips:
+                {path.length === 0 
+                  ? "Place both clips on factors to start:" 
+                  : movingClip !== null 
+                    ? `Now click where to move the ${movingClip === 0 ? 'blue' : 'red'} clip:` 
+                    : "Click a clip to move it:"}
               </p>
               <div className="flex justify-center gap-2 flex-wrap">
-                {factors.map((factor) => (
-                  <Button
-                    key={factor}
-                    variant={selectedFactors.includes(factor) ? "default" : "outline"}
-                    className={`w-12 h-12 text-lg ${
-                      selectedFactors[0] === factor ? 'bg-blue-500 hover:bg-blue-600' :
-                      selectedFactors[1] === factor ? 'bg-red-500 hover:bg-red-600' : ''
-                    }`}
-                    onClick={() => handleFactorClick(factor)}
-                    data-testid={`factor-${factor}`}
-                  >
-                    {factor}
-                  </Button>
-                ))}
+                {factors.map((factor) => {
+                  const isBlueClip = selectedFactors[0] === factor;
+                  const isRedClip = selectedFactors[1] === factor;
+                  const isMovingBlue = movingClip === 0 && isBlueClip;
+                  const isMovingRed = movingClip === 1 && isRedClip;
+                  
+                  return (
+                    <Button
+                      key={factor}
+                      variant={selectedFactors.includes(factor) ? "default" : "outline"}
+                      className={`w-12 h-12 text-lg transition-all ${
+                        isMovingBlue ? 'bg-blue-500 ring-4 ring-blue-300 animate-pulse' :
+                        isMovingRed ? 'bg-red-500 ring-4 ring-red-300 animate-pulse' :
+                        isBlueClip ? 'bg-blue-500 hover:bg-blue-600' :
+                        isRedClip ? 'bg-red-500 hover:bg-red-600' : ''
+                      }`}
+                      onClick={() => handleFactorClick(factor)}
+                      data-testid={`factor-${factor}`}
+                    >
+                      {factor}
+                    </Button>
+                  );
+                })}
               </div>
               {selectedFactors[0] !== null && selectedFactors[1] !== null && (
                 <p className="text-center mt-2 text-sm">
-                  Current clips: <span className="text-blue-600 font-bold">{selectedFactors[0]}</span> and{' '}
-                  <span className="text-red-600 font-bold">{selectedFactors[1]}</span>
+                  <span className={`font-bold ${movingClip === 0 ? 'text-blue-400 underline' : 'text-blue-600'}`}>
+                    Blue clip: {selectedFactors[0]}
+                  </span>
+                  {' × '}
+                  <span className={`font-bold ${movingClip === 1 ? 'text-red-400 underline' : 'text-red-600'}`}>
+                    Red clip: {selectedFactors[1]}
+                  </span>
+                  {' = '}
+                  <span className="font-bold">{selectedFactors[0] * selectedFactors[1]}</span>
                 </p>
               )}
             </div>
