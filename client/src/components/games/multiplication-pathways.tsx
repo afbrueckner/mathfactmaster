@@ -131,9 +131,6 @@ export function MultiplicationPathways({ onComplete, onExit }: MultiplicationPat
     if (col === 5) {
       setGameComplete(true);
       setFeedback("🎉 Congratulations! You made it across the board!");
-      const score = Math.max(100 - (attempts * 10), 50);
-      const accuracy = Math.round((6 / (6 + attempts)) * 100);
-      onComplete(score, accuracy, ['foundational multiplication', 'factor pairs', 'mental math']);
     } else {
       const nextPlayer = currentPlayer === 1 ? 2 : 1;
       setCurrentPlayer(nextPlayer);
@@ -153,6 +150,12 @@ export function MultiplicationPathways({ onComplete, onExit }: MultiplicationPat
     setSelectedFactors([null, null]);
     setCurrentPlayer(1);
     setFeedback("Board reset. Start fresh from the first column!");
+  };
+
+  const handleFinish = () => {
+    const score = Math.max(100 - (attempts * 10), 50);
+    const accuracy = Math.round((6 / (6 + attempts)) * 100);
+    onComplete(score, accuracy, ['foundational multiplication', 'factor pairs', 'mental math']);
   };
 
   if (!gameStarted) {
@@ -246,8 +249,8 @@ export function MultiplicationPathways({ onComplete, onExit }: MultiplicationPat
                 <Button onClick={initializeGame} className="bg-purple-600 hover:bg-purple-700" data-testid="play-again-btn">
                   🎮 Play Again
                 </Button>
-                <Button variant="outline" onClick={onExit} data-testid="finish-btn">
-                  ✓ Finish
+                <Button onClick={handleFinish} className="bg-green-600 hover:bg-green-700" data-testid="finish-btn">
+                  ✓ Save & Finish
                 </Button>
               </div>
             </CardContent>
