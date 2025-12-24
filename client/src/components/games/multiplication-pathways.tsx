@@ -197,37 +197,57 @@ export function MultiplicationPathways({ onComplete, onExit }: MultiplicationPat
 
   if (gameComplete) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-100 to-blue-100 dark:from-purple-900 dark:to-blue-900 p-4">
+      <div className="min-h-screen bg-gradient-to-br from-green-100 to-purple-100 dark:from-green-900 dark:to-purple-900 p-4">
         <div className="max-w-2xl mx-auto">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-2xl text-center">🎉 Path Complete!</CardTitle>
+          <Card className="border-4 border-green-500">
+            <CardHeader className="bg-green-50 dark:bg-green-900/30">
+              <div className="text-center space-y-2">
+                <div className="text-6xl animate-bounce">🎉</div>
+                <CardTitle className="text-3xl text-green-700 dark:text-green-300">
+                  Congratulations!
+                </CardTitle>
+                <p className="text-xl text-green-600 dark:text-green-400 font-semibold">
+                  You made it across the board!
+                </p>
+              </div>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <p className="text-center text-lg">
-                Great teamwork! You created a path across the board in {equations.length} moves.
-              </p>
+            <CardContent className="space-y-4 pt-6">
+              <div className="bg-purple-50 dark:bg-purple-900/30 rounded-lg p-4 text-center">
+                <p className="text-lg font-medium text-purple-800 dark:text-purple-200">
+                  🌟 Amazing teamwork! 🌟
+                </p>
+                <p className="text-gray-600 dark:text-gray-300">
+                  You completed the path in {equations.length} moves
+                  {attempts === 0 ? " with no resets!" : `.`}
+                </p>
+                {attempts === 0 && (
+                  <p className="text-green-600 dark:text-green-400 font-bold mt-2">
+                    ⭐ Perfect Run! ⭐
+                  </p>
+                )}
+              </div>
               {attempts > 0 && (
                 <p className="text-center text-gray-600 dark:text-gray-400">
-                  Resets needed: {attempts}
+                  Resets needed: {attempts} (Keep practicing to get a perfect run!)
                 </p>
               )}
               <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-                <h4 className="font-semibold mb-2">Your Path:</h4>
+                <h4 className="font-semibold mb-2 text-center">Your Winning Path:</h4>
                 <div className="space-y-1 text-sm">
                   {equations.map((eq, i) => (
-                    <div key={i} className={eq.player === 1 ? "text-blue-600" : "text-red-600"}>
-                      Player {eq.player}: {eq.equation}
+                    <div key={i} className={`flex items-center gap-2 ${eq.player === 1 ? "text-blue-600" : "text-red-600"}`}>
+                      <span className="font-medium">Step {i + 1}:</span>
+                      <span>Player {eq.player} - {eq.equation}</span>
                     </div>
                   ))}
                 </div>
               </div>
-              <div className="flex gap-4 justify-center">
+              <div className="flex gap-4 justify-center pt-4">
                 <Button onClick={initializeGame} className="bg-purple-600 hover:bg-purple-700" data-testid="play-again-btn">
-                  Play Again
+                  🎮 Play Again
                 </Button>
                 <Button variant="outline" onClick={onExit} data-testid="finish-btn">
-                  Finish
+                  ✓ Finish
                 </Button>
               </div>
             </CardContent>
