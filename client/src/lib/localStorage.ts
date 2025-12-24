@@ -437,6 +437,18 @@ export function getGames(): Game[] {
       foundationalFactsUsed: ["Addition Facts to 20", "Combinations to 10"],
       emoji: "🍀",
       difficulty: "intermediate"
+    },
+    {
+      id: "multiplication-pathways",
+      name: "Multiplication Pathways",
+      description: "Work as a team to create a connected path across the board using multiplication facts!",
+      operation: "multiplication",
+      category: "foundational",
+      targetFacts: ["0×n", "1×n", "2×n", "3×n", "4×n", "5×n", "6×n", "10×n"],
+      strategiesPracticed: ["Factor Pairs", "Foundational Multiplication", "Mental Math"],
+      foundationalFactsUsed: ["Multiplication by 0-6 and 10"],
+      emoji: "🛤️",
+      difficulty: "beginner"
     }
   ];
 }
