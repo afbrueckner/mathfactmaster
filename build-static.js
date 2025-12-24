@@ -2,16 +2,20 @@
 import { build } from 'vite';
 import path from 'path';
 import react from '@vitejs/plugin-react';
-import tailwindcss from '@tailwindcss/vite';
 
 async function buildStatic() {
   try {
     console.log('🔨 Building static files for GitHub Pages...\n');
     
     // Build the client for static hosting
+    // Uses the existing postcss.config.js and tailwind.config.ts for CSS processing
     await build({
-      plugins: [react(), tailwindcss()],
+      plugins: [react()],
       root: './client',
+      configFile: false, // Don't use existing vite.config.ts to avoid Replit-specific plugins
+      css: {
+        postcss: path.resolve(process.cwd(), 'postcss.config.js'),
+      },
       resolve: {
         alias: {
           "@": path.resolve(process.cwd(), "client", "src"),
