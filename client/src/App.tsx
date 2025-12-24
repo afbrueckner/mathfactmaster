@@ -1,4 +1,4 @@
-import { Switch, Route } from "wouter";
+import { Switch, Route, Router as WouterRouter } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -11,7 +11,10 @@ import Games from "@/pages/games";
 import Admin from "@/pages/admin";
 import NotFound from "@/pages/not-found";
 
-function Router() {
+const isGitHubPages = typeof window !== 'undefined' && window.location.hostname.includes('github.io');
+const basePath = isGitHubPages ? '/mathfactmaster' : '';
+
+function AppRoutes() {
   return (
     <Switch>
       <Route path="/" component={Dashboard} />
@@ -42,7 +45,9 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <Toaster />
-        <Router />
+        <WouterRouter base={basePath}>
+          <AppRoutes />
+        </WouterRouter>
       </TooltipProvider>
     </QueryClientProvider>
   );

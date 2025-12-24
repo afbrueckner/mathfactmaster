@@ -34,7 +34,7 @@ async function buildStatic() {
           },
         },
       },
-      base: './', // Use relative paths for GitHub Pages
+      base: '/mathfactmaster/', // Use absolute path for GitHub Pages subdirectory
     });
     
     // Create GitHub Pages specific files for SPA routing
